@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="display-5 fw-bold mb-4">Las 3 R del cuidado ambiental</h1>
+        <p class="lead">
+            Reducir, Reutilizar y Reciclar son las tres acciones fundamentales para 
+            minimizar nuestro impacto ambiental y promover un desarrollo sostenible.
+        </p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-success text-center">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">1. Reducir</h3>
+            </div>
+            <div class="card-body">
+                <h2 class="text-success">📉</h2>
+                <h5 class="card-title">Consumir solo lo necesario</h5>
+                <p class="card-text">
+                    La primera y más importante R. Significa disminuir la cantidad de 
+                    productos que consumimos, especialmente aquellos que generan residuos 
+                    o requieren muchos recursos para su producción.
+                </p>
+                <ul class="text-start">
+                    <li>Comprar solo lo necesario</li>
+                    <li>Evitar productos sobre-empaquetados</li>
+                    <li>Reducir el consumo de energía</li>
+                    <li>Usar menos agua</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100 border-success text-center">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">2. Reutilizar</h3>
+            </div>
+            <div class="card-body">
+                <h2 class="text-success">🔄</h2>
+                <h5 class="card-title">Dar una segunda vida a los objetos</h5>
+                <p class="card-text">
+                    Antes de tirar algo, piensa si puede tener otro uso. 
+                    Reutilizar significa alargar la vida útil de los productos 
+                    y materiales.
+                </p>
+                <ul class="text-start">
+                    <li>Usar bolsas de tela en lugar de plásticas</li>
+                    <li>Donar ropa y objetos que ya no uses</li>
+                    <li>Convertir envases en macetas o organizadores</li>
+                    <li>Reparar antes de reemplazar</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100 border-success text-center">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">3. Reciclar</h3>
+            </div>
+            <div class="card-body">
+                <h2 class="text-success">♻️</h2>
+                <h5 class="card-title">Transformar residuos en nuevos productos</h5>
+                <p class="card-text">
+                    Cuando no puedas reducir ni reutilizar, recicla. 
+                    El reciclaje convierte los materiales usados en nuevos productos, 
+                    ahorrando recursos y energía.
+                </p>
+                <ul class="text-start">
+                    <li>Separar los residuos correctamente</li>
+                    <li>Conocer los contenedores de colores</li>
+                    <li>Lavar los envases antes de reciclar</li>
+                    <li>Apoyar productos hechos con materiales reciclados</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <img src="{{ url_for('static', filename='images/reciclaje.jpg') }}" 
+             alt="Reciclaje" 
+             class="img-fluid rounded img-section">
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h3 class="mb-3">Consejos prácticos para aplicar las 3R</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">En la cocina</h5>
+                        <ul>
+                            <li>Usa servilletas de tela</li>
+                            <li>Compra a granel</li>
+                            <li>Reutiliza frascos de vidrio</li>
+                            <li>Composta los residuos orgánicos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">En la oficina</h5>
+                        <ul>
+                            <li>Usa ambas caras del papel</li>
+                            <li>Digitaliza documentos</li>
+                            <li>Recicla cartuchos de tinta</li>
+                            <li>Apaga equipos cuando no los uses</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h5> ¿Sabías que?</h5>
+            <p class="mb-0">
+                Reciclar una tonelada de papel salva 17 árboles, 
+                ahorra 26,500 litros de agua y reduce las emisiones de gases 
+                de efecto invernadero equivalentes a sacar un auto de la carretera durante 6 meses.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

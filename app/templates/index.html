@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row align-items-center mb-5">
+    <div class="col-md-6">
+        <h1 class="display-4 fw-bold mb-4">¿Por qué es importante cuidar el medio ambiente?</h1>
+        <p class="lead">
+            El medio ambiente es la base de la vida en nuestro planeta.
+            Protegerlo garantiza bienestar, salud y recursos para las futuras generaciones.
+            Cada acción cuenta en la preservación de nuestros ecosistemas.
+        </p>
+        <p>
+            La contaminación, deforestación y cambio climático son amenazas reales que
+            requieren nuestra atención inmediata y acción colectiva.
+        </p>
+        <div class="alert alert-success mt-4">
+            <strong>💡 Datos importantes:</strong> Más del 70% de la superficie terrestre
+            está cubierta por agua, pero solo el 2.5% es agua dulce.
+        </div>
+    </div>
+    <div class="col-md-6">
+        <img src="{{ url_for('static', filename='images/ambiente.jpg') }}" alt="Medio ambiente saludable"
+            class="img-fluid rounded img-section">
+    </div>
+
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h2 class="text-center mb-4">¿Qué encontrarás en esta web?</h2>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 text-center border-success">
+            <div class="card-body">
+                <h4 class="card-title">Sistema Ambiental</h4>
+                <p class="card-text">Aprende sobre los sistemas de gestión ambiental y su importancia.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 text-center border-success">
+            <div class="card-body">
+                <h4 class="card-title">Futuro</h4>
+                <p class="card-text">El impacto de nuestras acciones en las generaciones venideras.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 text-center border-success">
+            <div class="card-body">
+                <h4 class="card-title">♻️ 3 R</h4>
+                <p class="card-text">Reduce, Reutiliza y Recicla para un planeta más limpio.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 text-center border-success">
+            <div class="card-body">
+                <h4 class="card-title">🌱 Tips Prácticos</h4>
+                <p class="card-text">Consejos para aplicar en tu día a día.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

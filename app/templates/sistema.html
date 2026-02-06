@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="display-5 fw-bold mb-4">Sistema de Gestión Ambiental (SGA)</h1>
+    </div>
+</div>
+
+<div class="row align-items-center mb-5">
+<div class="col-md-6">
+    <img src="{{ url_for('static', filename='images/sistema.jpg') }}" 
+         alt="Sistema de Gestión Ambiental" 
+         class="img-fluid rounded img-section mb-3">
+</div>
+
+    <div class="col-md-6">
+        <p class="fs-5">
+            Un <strong>Sistema de Gestión Ambiental (SGA)</strong> es un conjunto de políticas, 
+            procedimientos y prácticas que permiten a organizaciones reducir su impacto ambiental 
+            y cumplir con normativas ecológicas.
+        </p>
+        <p>
+            Implementar un SGA ayuda a las empresas a ser más sostenibles, mejorar su imagen 
+            corporativa y contribuir activamente a la protección del medio ambiente.
+        </p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h3 class="mb-3"> Beneficios de un SGA</h3>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                <h5 class="card-title">🌿 Reducción de Impacto</h5>
+                <p class="card-text">Minimiza la huella ecológica de las operaciones empresariales.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                <h5 class="card-title">Ahorro Económico</h5>
+                <p class="card-text">Reduce costos mediante el uso eficiente de recursos.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-success">
+            <div class="card-body">
+                <h5 class="card-title">Cumplimiento Legal</h5>
+                <p class="card-text">Garantiza el cumplimiento de regulaciones ambientales.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12">
+        <h3 class="mb-3">Componentes Principales</h3>
+        <ul class="list-group">
+            <li class="list-group-item list-group-item-success">Política ambiental definida</li>
+            <li class="list-group-item">Planificación de objetivos y metas</li>
+            <li class="list-group-item list-group-item-success">Implementación y operación</li>
+            <li class="list-group-item">Verificación y acciones correctivas</li>
+            <li class="list-group-item list-group-item-success">Revisión por la dirección</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
