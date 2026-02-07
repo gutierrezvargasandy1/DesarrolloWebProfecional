@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ poi_type|capitalize }}s en {{ city_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+</head>
+<body>
+    <div class="map-container">
+        <div class="map-header">
+            <h1>📍 {{ poi_type|capitalize }}s Encontrados</h1>
+            <a href="/" class="btn-back">← Nueva Búsqueda</a>
+        </div>
+
+        <div class="location-info">
+            <h2>{{ city_name }}</h2>
+            
+            <div class="poi-count">
+                <span class="count-badge">{{ total_pois }}</span>
+                <span class="count-text">{{ poi_type }}s encontrados</span>
+            </div>
+
+            <div class="coordinates">
+                <div class="coord-item">
+                    <span class="coord-label">Centro - Latitud:</span>
+                    <span class="coord-value">{{ "%.6f"|format(latitude) }}</span>
+                </div>
+                <div class="coord-item">
+                    <span class="coord-label">Centro - Longitud:</span>
+                    <span class="coord-value">{{ "%.6f"|format(longitude) }}</span>
+                </div>
+            </div>
+
+            <div class="search-info">
+                <p>🔍 Búsqueda en un radio de <strong>10 km</strong> desde el centro</p>
+            </div>
+        </div>
+
+        <!-- Contenedor del mapa -->
+        <div id="map"></div>
+
+        <!-- Lista de POIs encontrados -->
+        <div class="poi-list">
+            <h3>📋 Lista de {{ poi_type|capitalize }}s ({{ total_pois }})</h3>
+            <div class="poi-items">
+                {% for poi in pois %}
+                <div class="poi-card" onclick="focusMarker({{ loop.index0 }})">
+                    <div class="poi-number">{{ loop.index }}</div>
+                    <div class="poi-info">
+                        <div class="poi-name">{{ poi.name }}</div>
+                        {% if poi.address %}
+                        <div class="poi-address">📍 {{ poi.address }}</div>
+                        {% endif %}
+                        <div class="poi-coords">
+                            Lat: {{ "%.6f"|format(poi.latitude) }} | Lon: {{ "%.6f"|format(poi.longitude) }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="map-footer">
+            <p>🗺️ Mapa proporcionado por <strong>OpenStreetMap</strong></p>
+            <p class="small-text">Haz clic en un marcador para ver detalles | Usa el zoom para explorar</p>
+        </div>
+    </div>
+
+    <script>
+        // Inicializar el mapa
+        var map = L.map('map').setView([{{ latitude }}, {{ longitude }}], 13);
+
+        // Agregar capa de tiles de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Iconos por tipo de POI
+        var iconMapping = {
+            'gasolinera': 'red',
+            'hospital': 'blue',
+            'farmacia': 'green',
+            'restaurante': 'orange',
+            'banco': 'gold',
+            'escuela': 'violet',
+            'supermercado': 'yellow',
+            'hotel': 'grey',
+            'ayuntamiento': 'red',
+            'policia': 'blue',
+            'bomberos': 'red',
+            'parque': 'green'
+        };
+
+        var poiType = '{{ poi_type }}';
+        var iconColor = iconMapping[poiType] || 'red';
+        var iconUrl = 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-' + iconColor + '.png';
+
+        var customIcon = L.icon({
+            iconUrl: iconUrl,
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        // Almacenar marcadores para poder enfocarlos después
+        var markers = [];
+        var bounds = [];
+
+        // Agregar marcadores para cada POI
+        {% for poi in pois %}
+        var marker{{ loop.index0 }} = L.marker([{{ poi.latitude }}, {{ poi.longitude }}], {icon: customIcon}).addTo(map);
+        marker{{ loop.index0 }}.bindPopup(
+            "<div class='popup-content'>" +
+            "<strong>{{ poi.name }}</strong><br>" +
+            "<em>{{ poi.type|capitalize }}</em><br>" +
+            "{% if poi.address %}<small>📍 {{ poi.address }}</small><br>{% endif %}" +
+            "<small>Lat: {{ "%.6f"|format(poi.latitude) }}</small><br>" +
+            "<small>Lon: {{ "%.6f"|format(poi.longitude) }}</small>" +
+            "</div>"
+        );
+        markers.push(marker{{ loop.index0 }});
+        bounds.push([{{ poi.latitude }}, {{ poi.longitude }}]);
+        {% endfor %}
+
+        // Ajustar el mapa para mostrar todos los POIs
+        if (bounds.length > 0) {
+            map.fitBounds(bounds, {padding: [50, 50]});
+        }
+
+        // Marcador central de la ciudad
+        var cityIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [30, 49],
+            iconAnchor: [15, 49],
+            popupAnchor: [1, -40],
+            shadowSize: [50, 50]
+        });
+        
+        var cityMarker = L.marker([{{ latitude }}, {{ longitude }}], {icon: cityIcon}).addTo(map);
+        cityMarker.bindPopup("<strong>Centro de Búsqueda</strong><br>{{ city_name }}");
+
+        // Función para enfocar un marcador desde la lista
+        function focusMarker(index) {
+            var marker = markers[index];
+            map.setView(marker.getLatLng(), 16);
+            marker.openPopup();
+        }
+    </script>
+</body>
+</html>

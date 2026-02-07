@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Lugares - Geolocalización</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Buscador de Lugares</h1>
+            <p class="subtitle">Encuentra gasolineras, hospitales, farmacias y más en cualquier ciudad del mundo</p>
+        </div>
+
+        <div class="search-box">
+            <form method="POST" action="/search">
+                
+                <!-- Filtro de Categorías -->
+                <div class="form-group">
+                    <label for="poi_type">📂 Selecciona una categoría:</label>
+                    <div class="category-grid">
+                        <div class="category-item">
+                            <input type="radio" id="gasolinera" name="poi_type" value="gasolinera" checked>
+                            <label for="gasolinera" class="category-label">
+                                <span class="category-icon">⛽</span>
+                                <span class="category-name">Gasolineras</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="hospital" name="poi_type" value="hospital">
+                            <label for="hospital" class="category-label">
+                                <span class="category-icon">🏥</span>
+                                <span class="category-name">Hospitales</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="farmacia" name="poi_type" value="farmacia">
+                            <label for="farmacia" class="category-label">
+                                <span class="category-icon">💊</span>
+                                <span class="category-name">Farmacias</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="ayuntamiento" name="poi_type" value="ayuntamiento">
+                            <label for="ayuntamiento" class="category-label">
+                                <span class="category-icon">🏛️</span>
+                                <span class="category-name">Ayuntamientos</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="restaurante" name="poi_type" value="restaurante">
+                            <label for="restaurante" class="category-label">
+                                <span class="category-icon">🍽️</span>
+                                <span class="category-name">Restaurantes</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="banco" name="poi_type" value="banco">
+                            <label for="banco" class="category-label">
+                                <span class="category-icon">🏦</span>
+                                <span class="category-name">Bancos</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="escuela" name="poi_type" value="escuela">
+                            <label for="escuela" class="category-label">
+                                <span class="category-icon">🏫</span>
+                                <span class="category-name">Escuelas</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="supermercado" name="poi_type" value="supermercado">
+                            <label for="supermercado" class="category-label">
+                                <span class="category-icon">🛒</span>
+                                <span class="category-name">Supermercados</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="hotel" name="poi_type" value="hotel">
+                            <label for="hotel" class="category-label">
+                                <span class="category-icon">🏨</span>
+                                <span class="category-name">Hoteles</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="policia" name="poi_type" value="policia">
+                            <label for="policia" class="category-label">
+                                <span class="category-icon">👮</span>
+                                <span class="category-name">Policía</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="bomberos" name="poi_type" value="bomberos">
+                            <label for="bomberos" class="category-label">
+                                <span class="category-icon">🚒</span>
+                                <span class="category-name">Bomberos</span>
+                            </label>
+                        </div>
+
+                        <div class="category-item">
+                            <input type="radio" id="parque" name="poi_type" value="parque">
+                            <label for="parque" class="category-label">
+                                <span class="category-icon">🌳</span>
+                                <span class="category-name">Parques</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Búsqueda de Ciudad -->
+                <div class="form-group">
+                    <label for="city">📍 Ingresa la ciudad o país:</label>
+                    <input 
+                        type="text" 
+                        id="city" 
+                        name="city" 
+                        placeholder="Ej: Dolores Hidalgo, Guanajuato, México"
+                        required
+                        autofocus
+                    >
+                </div>
+                
+                <button type="submit" class="btn-search">
+                    <span class="btn-icon">🔍</span>
+                    Buscar Lugares
+                </button>
+            </form>
+
+            {% if error %}
+            <div class="error-message">
+                <span class="error-icon">⚠️</span>
+                {{ error }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="examples">
+            <h3>💡 Ejemplos de búsqueda:</h3>
+            <ul>
+                <li><strong>Gasolineras</strong> en Dolores Hidalgo, Guanajuato</li>
+                <li><strong>Hospitales</strong> en Ciudad de México</li>
+                <li><strong>Farmacias</strong> en Guadalajara, Jalisco</li>
+                <li><strong>Ayuntamientos</strong> en Madrid, España</li>
+                <li><strong>Restaurantes</strong> en París, Francia</li>
+            </ul>
+        </div>
+
+        <footer class="footer">
+            <p>🗺️ Powered by <strong>OpenStreetMap</strong> y <strong>Overpass API</strong></p>
+            <p class="small-text">Proyecto educativo - Flask + Leaflet.js</p>
+        </footer>
+    </div>
+</body>
+</html>

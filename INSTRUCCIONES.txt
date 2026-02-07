@@ -1,0 +1,200 @@
+═══════════════════════════════════════════════════════════════
+  🗺️  INSTRUCCIONES DE INSTALACIÓN Y USO
+  Aplicación de Geolocalización con Flask
+═══════════════════════════════════════════════════════════════
+
+📋 REQUISITOS PREVIOS
+═══════════════════════════════════════════════════════════════
+✓ Python 3.8 o superior instalado
+✓ pip (gestor de paquetes de Python)
+✓ Conexión a Internet (para consultar la API)
+
+
+🚀 PASOS DE INSTALACIÓN
+═══════════════════════════════════════════════════════════════
+
+1️⃣  CREAR ENTORNO VIRTUAL
+   ---------------------------------
+   Windows:
+   > python -m venv venv
+   > venv\Scripts\activate
+
+   macOS/Linux:
+   $ python3 -m venv venv
+   $ source venv/bin/activate
+
+
+2️⃣  INSTALAR DEPENDENCIAS
+   ---------------------------------
+   > pip install -r requirements.txt
+
+   Esto instalará:
+   - Flask 3.0.0
+   - requests 2.31.0
+
+
+3️⃣  EJECUTAR LA APLICACIÓN
+   ---------------------------------
+   > python app.py
+
+   Verás un mensaje como:
+   * Running on http://127.0.0.1:5000
+
+
+4️⃣  ABRIR EN EL NAVEGADOR
+   ---------------------------------
+   Abre tu navegador favorito y ve a:
+   http://127.0.0.1:5000
+
+   o también:
+   http://localhost:5000
+
+
+🎯 CÓMO USAR LA APLICACIÓN
+═══════════════════════════════════════════════════════════════
+
+1. En la página principal, ingresa un lugar en el campo de texto
+   
+   Ejemplos válidos:
+   ✓ Dolores Hidalgo Guanajuato
+   ✓ Torre Eiffel París
+   ✓ Statue of Liberty New York
+   ✓ Machu Picchu Perú
+   ✓ Hospital General Ciudad de México
+
+2. Haz clic en "Buscar Ubicación"
+
+3. El sistema te mostrará:
+   ✓ Nombre completo del lugar
+   ✓ Coordenadas (latitud y longitud)
+   ✓ Mapa interactivo con marcador
+   ✓ Zona de área (círculo rojo)
+
+4. En el mapa puedes:
+   ✓ Hacer zoom con la rueda del mouse
+   ✓ Arrastrar para mover el mapa
+   ✓ Hacer clic en el marcador para ver info
+
+
+🛠️ SOLUCIÓN DE PROBLEMAS
+═══════════════════════════════════════════════════════════════
+
+❌ Error: "No module named 'flask'"
+   Solución: pip install -r requirements.txt
+
+❌ Error: "Address already in use"
+   Solución: El puerto 5000 está ocupado
+   Cambia el puerto en app.py:
+   app.run(debug=True, port=5001)
+
+❌ Error: "No se pudo encontrar el lugar"
+   Solución: Intenta ser más específico
+   Ejemplo: En vez de "Paris", usa "Paris Francia"
+
+❌ Mapa no se muestra
+   Solución: Verifica tu conexión a Internet
+   (Leaflet.js se carga desde CDN)
+
+
+📦 ESTRUCTURA DE ARCHIVOS
+═══════════════════════════════════════════════════════════════
+
+flask_geolocalizacion/
+│
+├── app.py              ← Aplicación principal Flask
+├── templates/
+│   ├── index.html      ← Página de búsqueda
+│   └── map.html        ← Página del mapa
+├── static/
+│   └── css/
+│       └── styles.css  ← Estilos personalizados
+├── requirements.txt    ← Dependencias
+├── README.md           ← Documentación completa
+└── .gitignore          ← Archivos a ignorar en Git
+
+
+🌐 TECNOLOGÍAS UTILIZADAS
+═══════════════════════════════════════════════════════════════
+
+Backend:
+• Flask - Framework web de Python
+• requests - Librería para peticiones HTTP
+
+API:
+• Nominatim (OpenStreetMap) - Geolocalización
+
+Frontend:
+• HTML5 - Estructura
+• CSS3 - Estilos (gradientes, animaciones)
+• JavaScript - Interactividad
+• Leaflet.js - Mapas interactivos
+
+
+📚 RECURSOS ADICIONALES
+═══════════════════════════════════════════════════════════════
+
+Documentación Flask:
+https://flask.palletsprojects.com/
+
+API Nominatim:
+https://nominatim.org/release-docs/latest/api/Search/
+
+Leaflet.js:
+https://leafletjs.com/
+
+
+🤝 PARA SUBIR A GITHUB
+═══════════════════════════════════════════════════════════════
+
+1. Inicializa el repositorio:
+   > git init
+
+2. Agrega todos los archivos:
+   > git add .
+
+3. Haz el primer commit:
+   > git commit -m "Primer commit: Aplicación de geolocalización"
+
+4. Crea un repositorio en GitHub
+   (github.com → New repository)
+
+5. Conecta con tu repositorio:
+   > git remote add origin https://github.com/TU_USUARIO/flask-geolocalizacion.git
+
+6. Sube los archivos:
+   > git branch -M main
+   > git push -u origin main
+
+
+📸 CAPTURAS DE PANTALLA
+═══════════════════════════════════════════════════════════════
+
+Para documentar tu proyecto:
+
+1. Toma capturas de pantalla de:
+   ✓ Página principal (formulario de búsqueda)
+   ✓ Mapa con ubicación encontrada
+   ✓ Ejemplo de error (lugar no encontrado)
+
+2. Guárdalas en la carpeta: screenshots/
+
+3. Actualiza el README.md con las rutas correctas
+
+
+✅ CHECKLIST DE ENTREGA
+═══════════════════════════════════════════════════════════════
+
+□ Código funcional y probado
+□ README.md completo
+□ Capturas de pantalla incluidas
+□ Repositorio público en GitHub
+□ Link del repositorio compartido
+□ requirements.txt actualizado
+□ .gitignore configurado
+□ Documentación clara
+
+
+═══════════════════════════════════════════════════════════════
+  ¡Proyecto completado con éxito! 🎉
+  Desarrollado con 💜 usando Flask y OpenStreetMap
+═══════════════════════════════════════════════════════════════
