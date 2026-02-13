@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>techradar ai</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">techradar ai</h1>
+        
+        <form method="post" class="d-flex mb-5">
+            <input type="text" name="keyword" class="form-control me-2" placeholder="ej. artificial intelligence" required>
+            <button type="submit" class="btn btn-primary">Analizar</button>
+        </form>
+
+        {% if busqueda %}
+        <div class="alert alert-{{clase}} text-center">
+            <h3>Tendencia para "{{busqueda}}": {{tendencia}}</h3>
+        </div>
+
+        <div class="row">
+            <div class="col-md-7">
+                <h4>Noticias recientes</h4>
+                {% for n in noticias %}
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">{{n.titulo}}</h5>
+                        <p class="text-muted small">{{n.fuente}} - {{n.fecha}}</p>
+                        <a href="{{n.enlace}}" target="_blank" class="btn btn-sm btn-outline-dark">leer más</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-md-5">
+                <h4>Contenido multimedia</h4>
+                {% for v in videos %}
+                <div class="card mb-3 shadow-sm">
+                    <img src="{{v.miniatura}}" class="card-img-top">
+                    <div class="card-body">
+                        <h6>{{v.titulo}}</h6>
+                        <p class="small text-secondary">{{v.canal}}</p>
+                        <a href="{{v.enlace}}" target="_blank" class="btn btn-sm btn-danger">ver video</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
