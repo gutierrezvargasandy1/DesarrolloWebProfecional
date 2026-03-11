@@ -1,0 +1,179 @@
+-- =========================
+-- ENUMS
+-- =========================
+
+CREATE TYPE estado_mascota_enum AS ENUM (
+    'PERDIDA',
+    'ENCONTRADA',
+    'NORMAL',
+    'CELO',
+    'ADOPCION'
+);
+
+CREATE TYPE tipo_mensaje_enum AS ENUM (
+    'TEXTO',
+    'IMAGEN'
+);
+
+-- =========================
+-- TABLA: USUARIOS
+-- =========================
+CREATE TABLE Usuarios (
+    id_usuario SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    correo VARCHAR(150) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    telefono VARCHAR(20),
+
+    -- Campos de recuperación
+    token_recuperacion VARCHAR(255),
+    expiracion_token TIMESTAMP,
+
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE
+);
+
+-- =========================
+-- TABLA: MASCOTAS
+-- =========================
+CREATE TABLE Mascotas (
+    id_mascota SERIAL PRIMARY KEY,
+
+    id_usuario INTEGER NOT NULL
+        REFERENCES Usuarios(id_usuario)
+        ON DELETE CASCADE,
+
+    nombre VARCHAR(100),
+    especie VARCHAR(50) NOT NULL,
+    raza VARCHAR(100),
+    color VARCHAR(100),
+    sexo VARCHAR(20),
+    edad INTEGER,
+
+    descripcion TEXT,
+    foto_url VARCHAR(300),
+
+    -- Estado de la mascota
+    estado estado_mascota_enum DEFAULT 'NORMAL',
+
+    -- Dirección del hogar
+    direccion_hogar VARCHAR(250),
+
+    -- Coordenadas del hogar de la mascota
+    latitud_hogar DECIMAL(10,8),
+    longitud_hogar DECIMAL(11,8),
+
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- TABLA: REPORTES DE MASCOTA PERDIDA
+-- =========================
+CREATE TABLE ReportesMascota (
+    id_reporte SERIAL PRIMARY KEY,
+
+    id_mascota INTEGER NOT NULL
+        REFERENCES Mascotas(id_mascota)
+        ON DELETE CASCADE,
+
+    id_usuario INTEGER NOT NULL
+        REFERENCES Usuarios(id_usuario)
+        ON DELETE CASCADE,
+
+    descripcion TEXT,
+
+    -- Última ubicación donde se vio la mascota
+    latitud DECIMAL(10,8) NOT NULL,
+    longitud DECIMAL(11,8) NOT NULL,
+
+    direccion VARCHAR(250),
+
+    estado estado_mascota_enum DEFAULT 'PERDIDA',
+
+    fecha_reporte TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- TABLA: AVISTAMIENTOS
+-- =========================
+CREATE TABLE Avistamientos (
+
+    id_avistamiento SERIAL PRIMARY KEY,
+
+    id_reporte INTEGER NOT NULL
+        REFERENCES ReportesMascota(id_reporte)
+        ON DELETE CASCADE,
+
+    id_usuario INTEGER
+        REFERENCES Usuarios(id_usuario)
+        ON DELETE SET NULL,
+
+    descripcion TEXT,
+
+    latitud DECIMAL(10,8),
+    longitud DECIMAL(11,8),
+
+    foto_url VARCHAR(300),
+
+    fecha_avistamiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- TABLA: CONVERSACIONES
+-- =========================
+CREATE TABLE Conversaciones (
+
+    id_conversacion SERIAL PRIMARY KEY,
+
+    id_reporte INTEGER NOT NULL
+        REFERENCES ReportesMascota(id_reporte)
+        ON DELETE CASCADE,
+
+    id_usuario1 INTEGER
+        REFERENCES Usuarios(id_usuario),
+
+    id_usuario2 INTEGER
+        REFERENCES Usuarios(id_usuario),
+
+    fecha_inicio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- TABLA: MENSAJES
+-- =========================
+CREATE TABLE Mensajes (
+
+    id_mensaje SERIAL PRIMARY KEY,
+
+    id_conversacion INTEGER NOT NULL
+        REFERENCES Conversaciones(id_conversacion)
+        ON DELETE CASCADE,
+
+    id_emisor INTEGER
+        REFERENCES Usuarios(id_usuario),
+
+    mensaje TEXT,
+
+    tipo tipo_mensaje_enum DEFAULT 'TEXTO',
+
+    fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =========================
+-- ÍNDICES
+-- =========================
+
+CREATE INDEX idx_reportes_usuario
+ON ReportesMascota(id_usuario);
+
+CREATE INDEX idx_reportes_mascota
+ON ReportesMascota(id_mascota);
+
+CREATE INDEX idx_avistamientos_reporte
+ON Avistamientos(id_reporte);
+
+CREATE INDEX idx_mensajes_conversacion
+ON Mensajes(id_conversacion);
+
+CREATE INDEX idx_mascotas_ubicacion
+ON Mascotas(latitud_hogar, longitud_hogar);
