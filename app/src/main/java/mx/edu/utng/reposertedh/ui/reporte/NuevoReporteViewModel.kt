@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -14,7 +13,6 @@ import mx.edu.utng.reposertedh.data.JwtDecoder
 import mx.edu.utng.reposertedh.data.TokenManager
 import mx.edu.utng.reposertedh.model.ReporteRequest
 import mx.edu.utng.reposertedh.network.ReporteApiService
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -41,11 +39,11 @@ class NuevoReporteViewModel(
     val state: StateFlow<NuevoReporteState> = _state
 
     fun crearReporte(
-        titulo: String,
         descripcion: String,
         lat: Double,
         lng: Double,
-        imagenFile: File?
+        idMascota: Int? = null,
+        imagenFile: File? = null
     ) {
         viewModelScope.launch {
             _state.value = NuevoReporteState.Loading
@@ -56,29 +54,32 @@ class NuevoReporteViewModel(
                     return@launch
                 }
 
-                // Construir el objeto reporte y serializarlo a JSON
                 val reporteRequest = ReporteRequest(
                     idUsuario   = userId,
-                    titulo      = titulo,
+                    idMascota   = idMascota,
                     descripcion = descripcion,
                     latitud     = BigDecimal(lat),
                     longitud    = BigDecimal(lng)
                 )
-                val reporteJson = Gson().toJson(reporteRequest)
-                val reporteBody = reporteJson.toRequestBody("application/json".toMediaType())
+
+                val builder = okhttp3.MultipartBody.Builder().setType(okhttp3.MultipartBody.FORM)
+                builder.addFormDataPart("id_usuario", userId.toString())
+                builder.addFormDataPart("descripcion", descripcion)
+                builder.addFormDataPart("latitud", lat.toString())
+                builder.addFormDataPart("longitud", lng.toString())
+                if (idMascota != null) builder.addFormDataPart("id_mascota", idMascota.toString())
 
                 val imagenPart: MultipartBody.Part? = imagenFile?.let { file ->
-                    val imageBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
-                    MultipartBody.Part.createFormData("imagen", file.name, imageBody)
+                    MultipartBody.Part.createFormData(
+                        "imagen", file.name,
+                        file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    )
                 }
 
-                val response = api.crearReporte(reporteBody, imagenPart)
+                val response = api.crearReporte(builder.build(), imagenPart)
 
-                _state.value = if (response.isSuccessful) {
-                    NuevoReporteState.Success
-                } else {
-                    NuevoReporteState.Error("Error al crear reporte: ${response.code()}")
-                }
+                _state.value = if (response.isSuccessful) NuevoReporteState.Success
+                else NuevoReporteState.Error("Error ${response.code()}: ${response.message()}")
 
             } catch (e: Exception) {
                 _state.value = NuevoReporteState.Error("Sin conexión: ${e.message}")
@@ -88,25 +89,15 @@ class NuevoReporteViewModel(
 
     fun comprimirImagen(context: Context, archivo: File): File {
         val bitmap = BitmapFactory.decodeFile(archivo.absolutePath)
-
         val archivoComprimido = File(context.cacheDir, "comprimida_${archivo.name}")
         val outputStream = FileOutputStream(archivoComprimido)
-
         val maxSize = 1024
         val ratio = minOf(maxSize.toFloat() / bitmap.width, maxSize.toFloat() / bitmap.height)
-        val nuevoBitmap = if (ratio < 1f) {
-            Bitmap.createScaledBitmap(
-                bitmap,
-                (bitmap.width * ratio).toInt(),
-                (bitmap.height * ratio).toInt(),
-                true
-            )
-        } else bitmap
-
+        val nuevoBitmap = if (ratio < 1f)
+            Bitmap.createScaledBitmap(bitmap, (bitmap.width * ratio).toInt(), (bitmap.height * ratio).toInt(), true)
+        else bitmap
         nuevoBitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream)
-        outputStream.flush()
-        outputStream.close()
-
+        outputStream.flush(); outputStream.close()
         return archivoComprimido
     }
 }

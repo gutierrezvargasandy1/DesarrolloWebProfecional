@@ -1,12 +1,6 @@
 package mx.edu.utng.reposertedh.model
-
-data class LoginRequest(
-    val correo: String,
-    val password: String
-)
-
 data class LoginResponse(
-    val tokenJwt: String
+    val token: String
 )
 
 data class ApiResponse<T>(
@@ -15,34 +9,36 @@ data class ApiResponse<T>(
     val data: T?
 )
 
-enum class TipoUsuarioEnum {
-    CIUDADANO, AUTORIDAD, ADMIN
-}
-
-data class UsuarioRegistroRequest(
+data class RegistroResponse(
+    val id_usuario: Int,
     val nombre: String,
-    val apellido: String,
     val correo: String,
-    val telefono: String,
-    val password: String,
-    val tipoUsuario: TipoUsuarioEnum
+    val telefono: String
 )
 
-data class RegistroResponse(
-    val registrado: Boolean
+data class LoginRequest(
+    val correo: String,
+    val password: String
 )
 
 data class RecuperacionRequest(
     val correo: String
 )
 
-data class ValidacionCodigoRequest(
-    val codigo: String,
-    val correo: String
+data class VerificarCodigoRequest(
+    val correo: String,
+    val codigo: String
 )
 
-data class RecuperacionValidacionRequest(
+data class CambiarPasswordRequest(
     val correo: String,
-    val nuevaPassword: String,
-    val codigo: String
+    val codigo: String,
+    val nueva_password: String
+)
+
+data class UsuarioRegistroRequest(
+    val nombre: String,
+    val correo: String,
+    val password: String,
+    val telefono: String
 )

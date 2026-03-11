@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import mx.edu.utng.reposertedh.model.RecuperacionRequest
-import mx.edu.utng.reposertedh.model.RecuperacionValidacionRequest
-import mx.edu.utng.reposertedh.model.ValidacionCodigoRequest
+import mx.edu.utng.reposertedh.model.VerificarCodigoRequest
+import mx.edu.utng.reposertedh.model.CambiarPasswordRequest
 import mx.edu.utng.reposertedh.network.AuthApiService
 
 sealed class RecoveryState {
@@ -28,60 +28,92 @@ class RecoveryViewModel(private val api: AuthApiService) : ViewModel() {
     // Guardamos correo y código internamente
     var correoGuardado: String = ""
         private set
+
     var codigoGuardado: String = ""
         private set
 
+    // ─────────────────────────────
     // PASO 1: Enviar código al correo
+    // ─────────────────────────────
     fun enviarCodigo(correo: String) {
         viewModelScope.launch {
             _state.value = RecoveryState.Loading
             try {
-                val response = api.enviarCodigo(RecuperacionRequest(correo))
+
+                val response = api.enviarCodigo(
+                    RecuperacionRequest(correo)
+                )
+
                 if (response.isSuccessful) {
-                    correoGuardado = correo  // guardamos el correo
+                    correoGuardado = correo
                     _state.value = RecoveryState.CodigoEnviado
                 } else {
                     _state.value = RecoveryState.Error("Correo no encontrado")
                 }
+
             } catch (e: Exception) {
                 _state.value = RecoveryState.Error("Sin conexión: ${e.message}")
             }
         }
     }
 
+    // ─────────────────────────────
     // PASO 2: Validar código
+    // ─────────────────────────────
     fun validarCodigo(codigo: String) {
         viewModelScope.launch {
+
             _state.value = RecoveryState.Loading
+
             try {
-                val response = api.validarToken(
-                    ValidacionCodigoRequest(codigo, correoGuardado)
+
+                val response = api.verificarCodigo(
+                    VerificarCodigoRequest(
+                        correo = correoGuardado,
+                        codigo = codigo
+                    )
                 )
+
                 if (response.isSuccessful && response.body()?.data == true) {
-                    codigoGuardado = codigo  // guardamos el código
+
+                    codigoGuardado = codigo
                     _state.value = RecoveryState.CodigoValido
+
                 } else {
                     _state.value = RecoveryState.Error("Código inválido o expirado")
                 }
+
             } catch (e: Exception) {
                 _state.value = RecoveryState.Error("Sin conexión: ${e.message}")
             }
         }
     }
 
+    // ─────────────────────────────
     // PASO 3: Cambiar contraseña
+    // ─────────────────────────────
     fun cambiarPassword(nuevaPassword: String) {
+
         viewModelScope.launch {
+
             _state.value = RecoveryState.Loading
+
             try {
+
                 val response = api.cambiarPassword(
-                    RecuperacionValidacionRequest(correoGuardado, nuevaPassword, codigoGuardado)
+                    CambiarPasswordRequest(
+                        correo = correoGuardado,
+                        codigo = codigoGuardado,
+                        nueva_password = nuevaPassword
+                    )
                 )
+
                 if (response.isSuccessful) {
                     _state.value = RecoveryState.PasswordCambiado
                 } else {
                     _state.value = RecoveryState.Error("Error al cambiar contraseña")
                 }
+
             } catch (e: Exception) {
                 _state.value = RecoveryState.Error("Sin conexión: ${e.message}")
             }
@@ -94,6 +126,9 @@ class RecoveryViewModel(private val api: AuthApiService) : ViewModel() {
 }
 
 class RecoveryViewModelFactory(private val api: AuthApiService) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        RecoveryViewModel(api) as T
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return RecoveryViewModel(api) as T
+    }
+
 }

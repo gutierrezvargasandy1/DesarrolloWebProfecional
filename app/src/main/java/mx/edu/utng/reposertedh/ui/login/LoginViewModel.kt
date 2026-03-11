@@ -31,7 +31,7 @@ class LoginViewModel(
             try {
                 val response = api.login(LoginRequest(correo, password))
                 if (response.isSuccessful) {
-                    val token = response.body()?.data?.tokenJwt
+                    val token = response.body()?.data?.token
                     if (!token.isNullOrEmpty()) {
                         tokenManager.saveToken(token)
                         _state.value = LoginState.Success(token)

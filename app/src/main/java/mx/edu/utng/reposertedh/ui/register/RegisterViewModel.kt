@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import mx.edu.utng.reposertedh.model.TipoUsuarioEnum
 import mx.edu.utng.reposertedh.model.UsuarioRegistroRequest
 import mx.edu.utng.reposertedh.network.AuthApiService
 
@@ -24,31 +23,51 @@ class RegisterViewModel(private val api: AuthApiService) : ViewModel() {
 
     fun registrar(
         nombre: String,
-        apellido: String,
         correo: String,
         telefono: String,
-        password: String,
-        tipoUsuario: TipoUsuarioEnum
+        password: String
     ) {
+
         viewModelScope.launch {
+
             _state.value = RegisterState.Loading
+
             try {
+
                 val response = api.registro(
-                    UsuarioRegistroRequest(nombre, apellido, correo, telefono, password, tipoUsuario)
+                    UsuarioRegistroRequest(
+                        nombre = nombre,
+                        correo = correo,
+                        password = password,
+                        telefono = telefono
+                    )
                 )
-                if (response.isSuccessful && response.body()?.data?.registrado == true) {
+
+                if (response.isSuccessful && response.body()?.data != null) {
+
                     _state.value = RegisterState.Success
+
                 } else {
-                    _state.value = RegisterState.Error(response.body()?.message ?: "Error al registrar")
+
+                    _state.value = RegisterState.Error(
+                        response.body()?.message ?: "Error al registrar"
+                    )
                 }
+
             } catch (e: Exception) {
-                _state.value = RegisterState.Error("Sin conexión: ${e.message}")
+
+                _state.value = RegisterState.Error(
+                    "Sin conexión: ${e.message}"
+                )
             }
         }
     }
 }
 
 class RegisterViewModelFactory(private val api: AuthApiService) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-        RegisterViewModel(api) as T
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return RegisterViewModel(api) as T
+    }
+
 }
