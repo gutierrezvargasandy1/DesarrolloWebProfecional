@@ -34,7 +34,7 @@ def create_app(config_name="default"):
     from app.UsuarioModule.controller.UsuarioController import usuario_bp
     from app.MascotaModule.controller.MascotaContoller import mascota_bp
     from app.utils.file_controller import file_bp
-
+    from app.ReporteModule.controller.ReporteMascotaController import reporte_bp
 
     # ─────────────────────────────────────
     # REGISTRAR RUTAS
@@ -43,7 +43,7 @@ def create_app(config_name="default"):
     app.register_blueprint(usuario_bp, url_prefix="/api/usuarios")
     app.register_blueprint(mascota_bp, url_prefix="/api/mascotas")
     app.register_blueprint(file_bp, url_prefix="/files")
-    
+    app.register_blueprint(reporte_bp, url_prefix="/api/reportes")
 
     # ─────────────────────────────────────
     # CONFIGURACIÓN SWAGGER

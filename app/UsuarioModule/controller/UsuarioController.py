@@ -1,7 +1,9 @@
 from flask import Blueprint, request
 from app.UsuarioModule.Service.UsuarioService import UsuarioService
+from app.UsuarioModule.Dto.CrearUsuarioDTO import CrearUsuarioDTO
+from app.UsuarioModule.Dto.ActualizarUsuarioDTO import ActualizarUsuarioDTO
 from app.config.Dto.ApiResponse import ApiResponse
-from app.config.JwtFilter import generate_token, jwt_required, role_required
+from app.config.JwtFilter import jwt_required, role_required
 
 usuario_bp = Blueprint("usuarios", __name__)
 service    = UsuarioService()
@@ -68,6 +70,7 @@ def get_by_id(id):
         return ApiResponse(500, str(e)).to_response()
 
 
+# ✅ REGISTRO CON DTO + SWAGGER
 @usuario_bp.route("/registro", methods=["POST"])
 def register():
     """
@@ -102,14 +105,23 @@ def register():
         description: El correo ya está registrado
     """
     try:
-        data    = request.get_json()
-        usuario = service.crear(data)
+        data = request.get_json()
+
+        dto = CrearUsuarioDTO(
+            nombre=data.get("nombre"),
+            correo=data.get("correo"),
+            password=data.get("password"),
+            telefono=data.get("telefono")
+        )
+
+        usuario = service.crear(dto)
         return ApiResponse(201, "Usuario creado", usuario.to_dict()).to_response()
+
     except ValueError as e:
         return ApiResponse(409, str(e)).to_response()
 
 
-
+# ✅ ACTUALIZAR CON DTO + SWAGGER
 @usuario_bp.route("/<int:id>", methods=["PUT"])
 @jwt_required
 def actualizar(id):
@@ -136,12 +148,18 @@ def actualizar(id):
             nombre:
               type: string
               example: Juan Pérez
+            correo:
+              type: string
+              example: nuevo@email.com
             telefono:
               type: string
               example: 4611234567
             password:
               type: string
               example: nuevaPassword
+            activo:
+              type: boolean
+              example: true
     responses:
       200:
         description: Usuario actualizado correctamente
@@ -151,9 +169,19 @@ def actualizar(id):
         description: Token inválido
     """
     try:
-        data    = request.get_json()
-        usuario = service.actualizar(id, data)
+        data = request.get_json()
+
+        dto = ActualizarUsuarioDTO(
+            nombre=data.get("nombre"),
+            correo=data.get("correo"),
+            password=data.get("password"),
+            telefono=data.get("telefono"),
+            activo=data.get("activo")
+        )
+
+        usuario = service.actualizar(id, dto)
         return ApiResponse(200, "Actualizado", usuario.to_dict()).to_response()
+
     except ValueError as e:
         return ApiResponse(404, str(e)).to_response()
 

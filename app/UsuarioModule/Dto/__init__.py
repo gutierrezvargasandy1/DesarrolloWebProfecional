@@ -1,0 +1,2 @@
+from app.UsuarioModule.Dto.CrearUsuarioDTO import CrearUsuarioDTO
+from app.UsuarioModule.Dto.ActualizarUsuarioDTO import ActualizarUsuarioDTO
