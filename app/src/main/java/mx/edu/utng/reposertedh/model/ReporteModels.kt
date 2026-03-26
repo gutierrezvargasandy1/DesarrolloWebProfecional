@@ -1,22 +1,78 @@
 package mx.edu.utng.reposertedh.model
 
-import java.math.BigDecimal
+import com.google.gson.annotations.SerializedName
 
+// ======================= REQUEST =======================
+// Coincide con CrearReporteDTO del backend
 data class ReporteRequest(
+
+    @SerializedName("id_usuario")
     val idUsuario: Int,
-    val titulo: String,
+
+    @SerializedName("id_mascota")
+    val idMascota: Int,
+
+    @SerializedName("descripcion")
     val descripcion: String,
-    val latitud: BigDecimal,
-    val longitud: BigDecimal,
+
+    @SerializedName("latitud")
+    val latitud: Double,
+
+    @SerializedName("longitud")
+    val longitud: Double,
+
+    // Opcionales que el backend acepta
+    @SerializedName("direccion")
+    val direccion: String? = null,
+
+    @SerializedName("estado")
+    val estado: String = "PERDIDA"
 )
 
+
+// ======================= RESPONSE =======================
+// Parseará EXACTO lo que manda tu backend
 data class ReporteResponse(
+
+    @SerializedName("id_reporte")
     val idReporte: Int,
-    val titulo: String,
+
     val descripcion: String,
     val latitud: Double,
     val longitud: Double,
-    val imagenUrl: String?,
+    val direccion: String?,
+
+    @SerializedName("estado")
     val estado: String,
-    val fechaReporte: String
+
+    @SerializedName("fecha_reporte")
+    val fechaReporte: String,
+
+    val mascota: Mascota
+) {
+    // 🔥 Sigues usando estos campos igual que antes en tu app
+    val titulo: String
+        get() = mascota.nombre
+
+    val imagenUrl: String?
+        get() = mascota.fotoUrl
+}
+
+
+// ======================= MASCOTA ANIDADA =======================
+data class Mascota(
+
+    @SerializedName("id_mascota")
+    val idMascota: Int,
+
+    val nombre: String,
+    val especie: String,
+    val raza: String,
+    val color: String,
+    val sexo: String,
+    val edad: Int,
+    val descripcion: String,
+
+    @SerializedName("foto_url")
+    val fotoUrl: String?
 )

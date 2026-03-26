@@ -431,7 +431,8 @@ fun NuevoReporteScreen(
                 Button(
                     onClick = {
                         if (latitud != null && longitud != null) {
-                            val archivoFinal = fotoFile?.let { viewModel.comprimirImagen(context, it) }
+                            val archivoFinal = fotoFile?.let { viewModel.comprimirImagen(it) }
+
                             viewModel.crearReporte(
                                 descripcion = descripcion,
                                 lat  = latitud!!,
@@ -441,7 +442,10 @@ fun NuevoReporteScreen(
                             )
                         }
                     },
-                    modifier = Modifier.fillMaxWidth().height(52.dp).shadow(8.dp, RoundedCornerShape(16.dp)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .shadow(8.dp, RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = PetOrange,
@@ -450,7 +454,11 @@ fun NuevoReporteScreen(
                     enabled = state !is NuevoReporteState.Loading && latitud != null
                 ) {
                     if (state is NuevoReporteState.Loading) {
-                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = SurfaceW)
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = SurfaceW
+                        )
                         Spacer(Modifier.width(8.dp))
                         Text("Publicando...", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     } else {

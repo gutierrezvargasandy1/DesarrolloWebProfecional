@@ -96,9 +96,11 @@ fun DetalleReporteScreen(
                     .padding(16.dp)
             ) {
                 // ── Imagen del Reporte ──────────────────────────────────────
-                if (!r.imagenUrl.isNullOrBlank() && token != null) {
-                    // Limpiamos la URL para evitar dobles //
-                    val path = if (r.imagenUrl.startsWith("/")) r.imagenUrl else "/${r.imagenUrl}"
+                val imagenUrl = r.imagenUrl
+
+                if (!imagenUrl.isNullOrBlank() && token != null) {
+
+                    val path = if (imagenUrl.startsWith("/")) imagenUrl else "/$imagenUrl"
                     val fullUrl = "$baseUrlImagen$path"
 
                     Log.d("Detalle", "Cargando imagen desde: $fullUrl")
@@ -133,16 +135,15 @@ fun DetalleReporteScreen(
                             contentScale = ContentScale.Crop
                         )
 
-                        // Si está cargando mostrar un circulito
                         if (painter.state is AsyncImagePainter.State.Loading) {
                             CircularProgressIndicator(modifier = Modifier.size(30.dp))
                         }
 
-                        // Si falla mostrar un icono de error
                         if (painter.state is AsyncImagePainter.State.Error) {
                             Text("Error al cargar imagen", style = MaterialTheme.typography.bodySmall)
                         }
                     }
+
                     Spacer(Modifier.height(16.dp))
                 }
 
