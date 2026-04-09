@@ -23,9 +23,7 @@ def create_app(config_name="default"):
     from app.MascotaModule.Model.Mascota import Mascota
     from app.ReporteModule.Model.ReporteMascota import ReporteMascota
     from app.AvistamientoModule.Model.Avistamiento import Avistamiento
-    from app.ConversacionModule.Model.Conversacion import Conversacion
-    from app.ConversacionModule.Model.Mensaje import Mensaje
-
+    from app.ConversacionModule.Model.Conversacion import Conversacion, Mensaje  # ← ambos en el mismo archivo
 
     # ─────────────────────────────────────
     # IMPORTAR CONTROLADORES
@@ -35,6 +33,8 @@ def create_app(config_name="default"):
     from app.MascotaModule.controller.MascotaContoller import mascota_bp
     from app.utils.file_controller import file_bp
     from app.ReporteModule.controller.ReporteMascotaController import reporte_bp
+    from app.AvistamientoModule.Controller.AvistamientoController import avistamiento_bp
+    from app.ConversacionModule.Controller.ConversacionController import conversacion_bp
 
     # ─────────────────────────────────────
     # REGISTRAR RUTAS
@@ -44,6 +44,8 @@ def create_app(config_name="default"):
     app.register_blueprint(mascota_bp, url_prefix="/api/mascotas")
     app.register_blueprint(file_bp, url_prefix="/files")
     app.register_blueprint(reporte_bp, url_prefix="/api/reportes")
+    app.register_blueprint(avistamiento_bp, url_prefix="/api/avistamientos")
+    app.register_blueprint(conversacion_bp, url_prefix="/api/conversaciones")
 
     # ─────────────────────────────────────
     # CONFIGURACIÓN SWAGGER
@@ -55,7 +57,6 @@ def create_app(config_name="default"):
             "description": "API para gestión de usuarios, mascotas, reportes y avistamientos.",
             "version": "1.0.0"
         },
-
         "securityDefinitions": {
             "BearerAuth": {
                 "type": "apiKey",
@@ -64,14 +65,8 @@ def create_app(config_name="default"):
                 "description": "JWT Authorization header usando esquema: Bearer {token}"
             }
         },
-
-        "security": [
-            {
-                "BearerAuth": []
-            }
-        ]
+        "security": [{"BearerAuth": []}]
     }
-
 
     swagger_config = {
         "headers": [],
@@ -83,19 +78,14 @@ def create_app(config_name="default"):
                 "model_filter": lambda tag: True,
             }
         ],
-
         "swagger_ui": True,
         "specs_route": "/swagger/",
-
-        # CDN para evitar errores locales
         "swagger_ui_bundle_js": "https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js",
         "swagger_ui_standalone_preset_js": "https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-standalone-preset.js",
         "swagger_ui_css": "https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css",
-
         "swagger_ui_favicon_32": "https://unpkg.com/swagger-ui-dist@5.11.0/favicon-32x32.png",
         "swagger_ui_favicon_16": "https://unpkg.com/swagger-ui-dist@5.11.0/favicon-16x16.png",
     }
-
 
     Swagger(app, template=swagger_template, config=swagger_config)
 

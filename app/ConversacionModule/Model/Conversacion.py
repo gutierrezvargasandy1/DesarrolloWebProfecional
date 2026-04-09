@@ -1,18 +1,35 @@
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app import db
-from datetime import datetime
+
 
 class Conversacion(db.Model):
     __tablename__ = "conversaciones"
 
-    id_conversacion = db.Column(db.Integer, primary_key=True)
-    id_reporte      = db.Column(db.Integer, db.ForeignKey("reportesmascota.id_reporte"), nullable=False)
-    id_usuario1     = db.Column(db.Integer, db.ForeignKey("usuarios.id_usuario"))
-    id_usuario2     = db.Column(db.Integer, db.ForeignKey("usuarios.id_usuario"))
-    fecha_inicio    = db.Column(db.DateTime, default=datetime.utcnow)
+    id_conversacion = Column(Integer, primary_key=True, autoincrement=True)
+    id_reporte      = Column(Integer, ForeignKey("reportesmascotas.id_reporte"), nullable=False)
+    id_usuario_1    = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False)
+    id_usuario_2    = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False)
+    fecha_inicio    = Column(DateTime, default=func.now())
 
-    mensajes = db.relationship(
-        "Mensaje",
-        backref="conversacion",
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
+    # Relaciones
+    reporte    = relationship("ReporteMascota", back_populates="conversaciones")
+    usuario_1  = relationship("Usuario", foreign_keys=[id_usuario_1])
+    usuario_2  = relationship("Usuario", foreign_keys=[id_usuario_2])
+    mensajes   = relationship("Mensaje", back_populates="conversacion", cascade="all, delete-orphan")
+
+
+class Mensaje(db.Model):
+    __tablename__ = "mensajes"
+
+    id_mensaje      = Column(Integer, primary_key=True, autoincrement=True)
+    id_conversacion = Column(Integer, ForeignKey("conversaciones.id_conversacion"), nullable=False)
+    id_emisor       = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False)
+    mensaje         = Column(Text, nullable=False)
+    tipo            = Column(String(50), default="texto")
+    fecha_envio     = Column(DateTime, default=func.now())
+
+    # Relaciones
+    conversacion = relationship("Conversacion", back_populates="mensajes")
+    emisor       = relationship("Usuario", foreign_keys=[id_emisor])

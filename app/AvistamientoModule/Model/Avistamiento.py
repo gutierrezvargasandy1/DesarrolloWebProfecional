@@ -1,15 +1,21 @@
+from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app import db
-from datetime import datetime
+
 
 class Avistamiento(db.Model):
     __tablename__ = "avistamientos"
 
-    id_avistamiento = db.Column(db.Integer, primary_key=True)
-    id_reporte      = db.Column(db.Integer, db.ForeignKey("reportesmascota.id_reporte"), nullable=False)
-    id_usuario      = db.Column(db.Integer, db.ForeignKey("usuarios.id_usuario"))
+    id_avistamiento    = Column(Integer, primary_key=True, autoincrement=True)
+    id_reporte         = Column(Integer, ForeignKey("reportesmascotas.id_reporte"), nullable=False)
+    id_usuario         = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False)
+    descripcion        = Column(String(255), nullable=True)
+    latitud            = Column(Numeric(10, 7), nullable=False)
+    longitud           = Column(Numeric(10, 7), nullable=False)
+    foto_url           = Column(String(500), nullable=True)
+    fecha_avistamiento = Column(DateTime, default=func.now())
 
-    descripcion      = db.Column(db.Text)
-    latitud          = db.Column(db.Numeric(10,8))
-    longitud         = db.Column(db.Numeric(11,8))
-    foto_url         = db.Column(db.String(300))
-    fecha_avistamiento = db.Column(db.DateTime, default=datetime.utcnow)
+    # Relaciones
+    reporte = relationship("ReporteMascota", back_populates="avistamientos")
+    usuario = relationship("Usuario", back_populates="avistamientos")
