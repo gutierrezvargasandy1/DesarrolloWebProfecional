@@ -122,7 +122,7 @@ def crear_avistamiento(id):
 @reporte_bp.route("/avistamientos/<int:id_avistamiento>", methods=["PUT"])
 @jwt_required
 def editar_avistamiento(id_avistamiento):
-    user_id = request.current_user.get("sub")
+    user_id = g.user_id
     data = request.get_json()
 
     actualizado = service.actualizar_avistamiento(id_avistamiento, user_id, data)
