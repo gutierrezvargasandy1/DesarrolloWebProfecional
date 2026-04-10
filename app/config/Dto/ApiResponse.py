@@ -11,7 +11,9 @@ class ApiResponse(Generic[T]):
     data: Optional[T] = None
 
     def to_response(self):
+        success = self.status == 200 or self.status == 201
         return jsonify({
+            "success": success,
             "status": self.status,
             "message": self.message,
             "data": self.data

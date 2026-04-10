@@ -29,6 +29,7 @@ class Mascota(db.Model):
             "ENCONTRADA",
             "NORMAL",
             "CELO",
+            "ADOPCION",
             name="estado_mascota_enum"
         ),
         default="NORMAL"
