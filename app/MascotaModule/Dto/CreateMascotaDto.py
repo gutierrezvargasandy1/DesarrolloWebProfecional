@@ -1,12 +1,9 @@
 class CreateMascotaDto:
 
-    ESTADOS_VALIDOS = ["PERDIDA", "ENCONTRADA", "NORMAL", "CELO"]
+    ESTADOS_VALIDOS = ["PERDIDA", "ENCONTRADA", "NORMAL", "CELO", "ADOPCION"]
 
     @staticmethod
     def from_request(data):
-
-        if "id_usuario" not in data:
-            raise ValueError("El id_usuario es obligatorio.")
 
         if "especie" not in data:
             raise ValueError("La especie es obligatoria.")
@@ -17,7 +14,6 @@ class CreateMascotaDto:
             raise ValueError("Estado de mascota inválido.")
 
         return {
-            "id_usuario": data["id_usuario"],
             "nombre": data.get("nombre"),
             "especie": data["especie"],
             "raza": data.get("raza"),

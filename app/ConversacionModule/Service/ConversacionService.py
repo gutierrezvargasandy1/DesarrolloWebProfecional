@@ -17,19 +17,27 @@ class ConversacionService:
         )
         return [ConversacionDTO(c).to_dict() for c in conversaciones]
 
-    def obtener_conversacion_por_id(self, id_conversacion):
+    def obtener_conversacion_por_id(self, id_conversacion, id_usuario):
         conversacion = Conversacion.query.get(id_conversacion)
+
         if not conversacion:
-            return None
+            raise ValueError("Conversación no encontrada")
+
+        # ✅ Seguridad: solo participantes pueden verla
+        if id_usuario not in (conversacion.id_usuario_1, conversacion.id_usuario_2):
+            raise PermissionError("No tienes permiso para ver esta conversación")
+
         mensajes = (
             Mensaje.query
             .filter_by(id_conversacion=id_conversacion)
             .order_by(Mensaje.fecha_envio.asc())
             .all()
         )
+
         return ConversacionDTO(conversacion, mensajes).to_dict()
 
     def crear_conversacion(self, id_reporte, id_usuario_1, id_usuario_2):
+
         existente = Conversacion.query.filter_by(id_reporte=id_reporte).filter(
             ((Conversacion.id_usuario_1 == id_usuario_1) & (Conversacion.id_usuario_2 == id_usuario_2)) |
             ((Conversacion.id_usuario_1 == id_usuario_2) & (Conversacion.id_usuario_2 == id_usuario_1))
@@ -43,17 +51,21 @@ class ConversacionService:
             id_usuario_1=id_usuario_1,
             id_usuario_2=id_usuario_2
         )
+
         db.session.add(nueva)
         db.session.commit()
+
         return ConversacionDTO(nueva).to_dict()
 
     # ── MENSAJES ───────────────────────────────────────────
 
     def enviar_mensaje(self, id_conversacion, id_emisor, mensaje, tipo="texto"):
         conversacion = Conversacion.query.get(id_conversacion)
+
         if not conversacion:
             raise ValueError("Conversación no encontrada")
 
+        # ✅ Seguridad
         if id_emisor not in (conversacion.id_usuario_1, conversacion.id_usuario_2):
             raise PermissionError("No tienes permiso para enviar mensajes en esta conversación")
 
@@ -63,15 +75,47 @@ class ConversacionService:
             mensaje=mensaje,
             tipo=tipo
         )
+
         db.session.add(nuevo)
         db.session.commit()
+
         return MensajeDTO(nuevo).to_dict()
 
-    def obtener_mensajes(self, id_conversacion):
+    def obtener_mensajes(self, id_conversacion, id_usuario):
+        conversacion = Conversacion.query.get(id_conversacion)
+
+        if not conversacion:
+            raise ValueError("Conversación no encontrada")
+
+        # ✅ Seguridad
+        if id_usuario not in (conversacion.id_usuario_1, conversacion.id_usuario_2):
+            raise PermissionError("No tienes permiso para ver los mensajes")
+
         mensajes = (
             Mensaje.query
             .filter_by(id_conversacion=id_conversacion)
             .order_by(Mensaje.fecha_envio.asc())
             .all()
         )
+
         return [MensajeDTO(m).to_dict() for m in mensajes]
+
+    # ── 🆕 BORRAR CONVERSACIÓN POR USUARIO AUTENTICADO ─────────────────
+
+    def borrar_conversacion(self, id_conversacion, id_usuario):
+        conversacion = Conversacion.query.get(id_conversacion)
+
+        if not conversacion:
+            raise ValueError("Conversación no encontrada")
+
+        # ✅ SOLO participantes pueden borrarla
+        if id_usuario not in (conversacion.id_usuario_1, conversacion.id_usuario_2):
+            raise PermissionError("No tienes permiso para eliminar esta conversación")
+
+        # ✅ borrar mensajes primero (seguridad)
+        Mensaje.query.filter_by(id_conversacion=id_conversacion).delete()
+
+        db.session.delete(conversacion)
+        db.session.commit()
+
+        return {"message": "Conversación eliminada correctamente"}

@@ -8,16 +8,16 @@ class Conversacion(db.Model):
     __tablename__ = "conversaciones"
 
     id_conversacion = Column(Integer, primary_key=True, autoincrement=True)
-    id_reporte      = Column(Integer, ForeignKey("reportesmascotas.id_reporte"), nullable=False)
+    id_reporte      = Column(Integer, ForeignKey("reportesmascota.id_reporte"), nullable=False)
     id_usuario_1    = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False)
     id_usuario_2    = Column(Integer, ForeignKey("usuarios.id_usuario"), nullable=False)
     fecha_inicio    = Column(DateTime, default=func.now())
 
     # Relaciones
-    reporte    = relationship("ReporteMascota", back_populates="conversaciones")
-    usuario_1  = relationship("Usuario", foreign_keys=[id_usuario_1])
-    usuario_2  = relationship("Usuario", foreign_keys=[id_usuario_2])
-    mensajes   = relationship("Mensaje", back_populates="conversacion", cascade="all, delete-orphan")
+    reporte   = relationship("ReporteMascota", back_populates="conversaciones")
+    usuario_1 = relationship("Usuario", back_populates="conversaciones1", foreign_keys=[id_usuario_1])
+    usuario_2 = relationship("Usuario", back_populates="conversaciones2", foreign_keys=[id_usuario_2])
+    mensajes  = relationship("Mensaje", back_populates="conversacion", cascade="all, delete-orphan")
 
 
 class Mensaje(db.Model):
@@ -32,4 +32,4 @@ class Mensaje(db.Model):
 
     # Relaciones
     conversacion = relationship("Conversacion", back_populates="mensajes")
-    emisor       = relationship("Usuario", foreign_keys=[id_emisor])
+    emisor       = relationship("Usuario", back_populates="mensajes", foreign_keys=[id_emisor])  # ← back_populates

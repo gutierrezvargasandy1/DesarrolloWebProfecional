@@ -1,6 +1,6 @@
 class UpdateMascotaDto:
 
-    ESTADOS_VALIDOS = ["PERDIDA", "ENCONTRADA", "NORMAL", "CELO"]
+    ESTADOS_VALIDOS = ["PERDIDA", "ENCONTRADA", "NORMAL", "CELO", "ADOPCION"]
 
     @staticmethod
     def from_request(data):

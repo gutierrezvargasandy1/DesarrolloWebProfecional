@@ -22,7 +22,7 @@ def create_app(config_name="default"):
     from app.UsuarioModule.Model.Usuario import Usuario
     from app.MascotaModule.Model.Mascota import Mascota
     from app.ReporteModule.Model.ReporteMascota import ReporteMascota
-    from app.AvistamientoModule.Model.Avistamiento import Avistamiento
+    from app.ReporteModule.Model.Avistamiento import Avistamiento
     from app.ConversacionModule.Model.Conversacion import Conversacion, Mensaje  # ← ambos en el mismo archivo
 
     # ─────────────────────────────────────
@@ -33,7 +33,6 @@ def create_app(config_name="default"):
     from app.MascotaModule.controller.MascotaContoller import mascota_bp
     from app.utils.file_controller import file_bp
     from app.ReporteModule.controller.ReporteMascotaController import reporte_bp
-    from app.AvistamientoModule.Controller.AvistamientoController import avistamiento_bp
     from app.ConversacionModule.Controller.ConversacionController import conversacion_bp
 
     # ─────────────────────────────────────
@@ -44,7 +43,6 @@ def create_app(config_name="default"):
     app.register_blueprint(mascota_bp, url_prefix="/api/mascotas")
     app.register_blueprint(file_bp, url_prefix="/files")
     app.register_blueprint(reporte_bp, url_prefix="/api/reportes")
-    app.register_blueprint(avistamiento_bp, url_prefix="/api/avistamientos")
     app.register_blueprint(conversacion_bp, url_prefix="/api/conversaciones")
 
     # ─────────────────────────────────────

@@ -4,47 +4,57 @@ from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
 
+
 class UsuarioService:
 
-    def get_all(self):
-        return Usuario.query.filter_by(activo=True).all()
+    # ─────────────────────────────────────
+    # OBTENER USUARIO POR ID (del JWT)
+    # ─────────────────────────────────────
+    def get_by_id(self, user_id: int) -> Usuario:
+        usuario = db.session.get(Usuario, user_id)
 
-    def get_by_id(self, id):
-        return db.session.get(Usuario, id)
+        if not usuario or not usuario.activo:
+            raise ValueError("Usuario no encontrado.")
 
-    def get_by_correo(self, correo):
+        return usuario
+
+    # ─────────────────────────────────────
+    # OBTENER POR CORREO
+    # ─────────────────────────────────────
+    def get_by_correo(self, correo: str):
         return Usuario.query.filter_by(correo=correo).first()
 
-    # ✅ CREAR CON DTO
+    # ─────────────────────────────────────
+    # CREAR USUARIO (REGISTRO)
+    # ─────────────────────────────────────
     def crear(self, dto):
         if self.get_by_correo(dto.correo):
             raise ValueError("El correo ya está registrado.")
 
         usuario = Usuario(
-            nombre        = dto.nombre,
-            correo        = dto.correo,
-            password_hash = bcrypt.generate_password_hash(dto.password).decode("utf-8"),
-            telefono      = dto.telefono
+            nombre=dto.nombre,
+            correo=dto.correo,
+            password_hash=bcrypt.generate_password_hash(dto.password).decode("utf-8"),
+            telefono=dto.telefono,
+            activo=True
         )
 
         db.session.add(usuario)
         db.session.commit()
         return usuario
 
-    # ✅ ACTUALIZAR CON DTO
-    def actualizar(self, id, dto):
-        usuario = self.get_by_id(id)
-
-        if not usuario:
-            raise ValueError("Usuario no encontrado.")
+    # ─────────────────────────────────────
+    # ACTUALIZAR USUARIO (DEL JWT)
+    # ─────────────────────────────────────
+    def actualizar(self, user_id: int, dto):
+        usuario = self.get_by_id(user_id)
 
         if dto.nombre:
             usuario.nombre = dto.nombre
 
         if dto.correo:
-            # Validar que no exista otro con ese correo
             existente = self.get_by_correo(dto.correo)
-            if existente and existente.id_usuario != id:
+            if existente and existente.id_usuario != user_id:
                 raise ValueError("El correo ya está en uso.")
             usuario.correo = dto.correo
 
@@ -54,17 +64,16 @@ class UsuarioService:
         if dto.password:
             usuario.password_hash = bcrypt.generate_password_hash(dto.password).decode("utf-8")
 
-        if dto.activo is not None:
-            usuario.activo = dto.activo
+
 
         db.session.commit()
         return usuario
 
-    def eliminar(self, id):
-        usuario = self.get_by_id(id)
+    # ─────────────────────────────────────
+    # ELIMINAR USUARIO (SOFT DELETE DEL JWT)
+    # ─────────────────────────────────────
+    def eliminar(self, user_id: int):
+        usuario = self.get_by_id(user_id)
 
-        if not usuario:
-            raise ValueError("Usuario no encontrado.")
-
-        usuario.activo = False  # Soft delete
+        usuario.activo = False
         db.session.commit()

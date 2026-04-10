@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
 
+
 class Usuario(db.Model):
     __tablename__ = "usuarios"
 
@@ -29,34 +30,34 @@ class Usuario(db.Model):
     )
     avistamientos = db.relationship(
         "Avistamiento",
-        backref="usuario",
+        back_populates="usuario",
         lazy=True
     )
     conversaciones1 = db.relationship(
         "Conversacion",
-        backref="usuario1",
-        lazy=True,
-        foreign_keys='Conversacion.id_usuario1'
+        back_populates="usuario_1",
+        foreign_keys="Conversacion.id_usuario_1",
+        lazy=True
     )
     conversaciones2 = db.relationship(
         "Conversacion",
-        backref="usuario2",
-        lazy=True,
-        foreign_keys='Conversacion.id_usuario2'
+        back_populates="usuario_2",
+        foreign_keys="Conversacion.id_usuario_2",
+        lazy=True
     )
     mensajes = db.relationship(
         "Mensaje",
-        backref="emisor",
-        lazy=True,
-        foreign_keys='Mensaje.id_emisor'
+        back_populates="emisor",         # ← back_populates en lugar de backref
+        foreign_keys="Mensaje.id_emisor",
+        lazy=True
     )
 
     def to_dict(self):
         return {
-            "id_usuario": self.id_usuario,
-            "nombre": self.nombre,
-            "correo": self.correo,
-            "telefono": self.telefono,
-            "fecha_registro": self.fecha_registro.isoformat(),
-            "activo": self.activo
+            "id_usuario":      self.id_usuario,
+            "nombre":          self.nombre,
+            "correo":          self.correo,
+            "telefono":        self.telefono,
+            "fecha_registro":  self.fecha_registro.isoformat(),
+            "activo":          self.activo
         }
