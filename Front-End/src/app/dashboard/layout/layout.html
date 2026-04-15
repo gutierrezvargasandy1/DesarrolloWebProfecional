@@ -1,0 +1,69 @@
+<div class="dashboard">
+    <!-- Overlay para cerrar menú en móvil -->
+    <div class="overlay" [class.open]="menuOpen" (click)="menuOpen = !menuOpen"></div>
+
+    <!-- Sidebar mejorado -->
+    <aside class="sidebar" [class.open]="menuOpen">
+        <div class="sidebar-header">
+            <div class="logo">
+                <span class="logo-icon">🐾</span>
+                <h2>PetApp</h2>
+            </div>
+            <button class="close-btn" (click)="menuOpen = false">✕</button>
+        </div>
+
+        <nav class="nav-menu">
+            <a routerLink="home" (click)="menuOpen = false" routerLinkActive="active">
+                <span class="nav-icon">🏠</span>
+                <span>Inicio</span>
+            </a>
+            <a (click)="menuOpen = false" routerLinkActive="active">
+                <span class="nav-icon">👥</span>
+                <span>Conversaciones</span>
+            </a>
+            <a (click)="menuOpen = false" routerLinkActive="active">
+                <span class="nav-icon">🐾</span>
+                <span>Mascotas</span>
+            </a>
+
+            <a (click)="menuOpen = false" routerLinkActive="active">
+                <span class="nav-icon">📊</span>
+                <span>Reportes</span>
+            </a>
+            
+            <a (click)="menuOpen = false" routerLinkActive="active">
+                <span class="nav-icon">📍</span>
+                <span>Avistamientos</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="avatar">👤</div>
+                <div>
+                    <p>Administrador</p>
+                    <small>admin@petapp.com</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="content">
+        <!-- Top bar mejorada -->
+        <header class="top-bar">
+            <button class="menu-btn" (click)="menuOpen = !menuOpen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="top-bar-actions">
+                <button class="notification-btn">🔔</button>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <router-outlet></router-outlet>
+        </div>
+    </main>
+</div>

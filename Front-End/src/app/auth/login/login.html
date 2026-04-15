@@ -1,0 +1,55 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo">
+      <div class="icon-big">🐾</div>
+      <h1>PetFinder</h1>
+      <p>Encuentra a tu mejor amigo 🐕🐈</p>
+    </div>
+
+    <form class="login-form" id="loginForm" novalidate>
+      <!-- Campo Email -->
+      <div class="input-group" id="emailGroup">
+        <label for="email">
+          <span>📧</span> Correo electrónico
+        </label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          placeholder="ejemplo@correo.com"
+          autocomplete="email"
+        />
+        <div class="error-message" id="emailError">
+          ⚠️ <span></span>
+        </div>
+      </div>
+
+      <!-- Campo Contraseña -->
+      <div class="input-group" id="passwordGroup">
+        <label for="password">
+          <span>🔒</span> Contraseña
+        </label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password"
+          placeholder="Mínimo 6 caracteres"
+          autocomplete="current-password"
+        />
+        <div class="error-message" id="passwordError">
+          ⚠️ <span></span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login">
+        🐾 Iniciar Sesión
+      </button>
+
+      <div class="extra-links">
+        <a href="#" id="forgotLink">🐶 ¿Olvidaste tu contraseña?</a>
+        <a href="#" id="signupLink">🐱 Crear cuenta nueva</a>
+      </div>
+    </form>
+    <div id="globalMsg" class="global-message"></div>
+  </div>
+</div>
