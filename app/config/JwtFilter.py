@@ -6,21 +6,36 @@ from datetime import datetime, timedelta
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+ACCESS_EXP_MIN = int(os.getenv("JWT_ACCESS_MIN", 15))
+REFRESH_EXP_DAYS = int(os.getenv("JWT_REFRESH_DAYS", 7))
 
-# ── Generar token ──────────────────────────────────────────
-def generate_token(user_id: int, role: str = "user") -> str:
+
+def generate_access_token(user_id: int, role: str) -> str:
     payload = {
-        "sub": user_id,          # id del usuario
-        "role": role,           # rol del usuario
+        "sub": user_id,
+        "role": role,
+        "type": "access",
         "iat": datetime.utcnow(),
-        "exp": datetime.utcnow() + timedelta(
-            hours=int(os.getenv("JWT_EXPIRATION_HOURS", 24))
-        ),
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_EXP_MIN),
     }
     return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
 
-# ── Decorator JWT (Interceptor real) ───────────────────────
+def generate_refresh_token(user_id: int) -> str:
+    payload = {
+        "sub": user_id,
+        "type": "refresh",
+        "iat": datetime.utcnow(),
+        "exp": datetime.utcnow() + timedelta(days=REFRESH_EXP_DAYS),
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+
+def decode_token(token: str):
+    return jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+
+
+# ── JWT REQUIRED (access token) ────────────────────────────
 def jwt_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -32,10 +47,13 @@ def jwt_required(f):
         token = auth_header.split(" ")[1]
 
         try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            payload = decode_token(token)
+
+            if payload.get("type") != "access":
+                raise jwt.InvalidTokenError()
 
             g.user_id = payload["sub"]
-            g.role    = payload["role"]
+            g.role = payload["role"]
 
         except jwt.ExpiredSignatureError:
             return jsonify({"status": 401, "message": "Token expirado"}), 401
@@ -45,16 +63,3 @@ def jwt_required(f):
         return f(*args, **kwargs)
 
     return decorated
-
-
-# ── Decorator por rol ──────────────────────────────────────
-def role_required(*roles):
-    def decorator(f):
-        @wraps(f)
-        @jwt_required
-        def decorated(*args, **kwargs):
-            if g.role not in roles:
-                return jsonify({"status": 403, "message": "No tienes permisos"}), 403
-            return f(*args, **kwargs)
-        return decorated
-    return decorator
