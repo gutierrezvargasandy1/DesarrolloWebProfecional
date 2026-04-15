@@ -16,7 +16,7 @@ export interface ApiOptions {
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private baseUrl = environment.apiUrl || 'http://localhost:3000/api';
+  private baseUrl = environment.apiUrl || 'http://localhost:5000/api';
   private defaultTimeout = 30000;
   private defaultRetry = 1;
 
