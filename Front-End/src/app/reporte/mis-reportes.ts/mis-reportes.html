@@ -1,0 +1,69 @@
+<section class="mis-reportes">
+  <div class="mis-reportes__top">
+    <div class="mis-reportes__title-group">
+      <h2 class="mis-reportes__title">Mis Reportes</h2>
+      <button class="mis-reportes__btn-nuevo" (click)="crearNuevoReporte()">➕ Nuevo reporte</button>
+    </div>
+    <input
+      class="mis-reportes__search"
+      type="text"
+      placeholder="Buscar por nombre, especie, lugar..."
+      (input)="buscar($any($event.target).value)"
+    />
+  </div>
+
+  <div *ngIf="loading" class="mis-reportes__state">
+    <span class="spinner"></span>
+    <p>Cargando tus reportes...</p>
+  </div>
+
+  <div *ngIf="error" class="mis-reportes__state mis-reportes__state--error">
+    <p>⚠️ No se pudieron cargar tus reportes.</p>
+  </div>
+
+  <div
+    *ngIf="!loading && !error && reportesFiltrados.length === 0"
+    class="mis-reportes__state"
+  >
+    <p>No se encontraron reportes.</p>
+  </div>
+
+  <ul *ngIf="!loading && !error && reportesFiltrados.length > 0" class="mis-reportes__grid">
+    <li
+      *ngFor="let reporte of reportesFiltrados"
+      class="reporte-card"
+      (click)="goToDetail(reporte.id_reporte)"
+    >
+      <div class="reporte-card__img-wrap">
+        <!-- Usamos UrlHelper.file para construir la URL completa de la foto -->
+        <img
+          *ngIf="reporte.mascota.foto_url; else noFoto"
+          [src]="urlHelper.file(reporte.mascota.foto_url)"
+          [alt]="reporte.mascota.nombre"
+          class="reporte-card__img"
+        />
+        <ng-template #noFoto>
+          <div class="reporte-card__img reporte-card__img--placeholder">🐾</div>
+        </ng-template>
+      </div>
+
+      <div class="reporte-card__body">
+        <div class="reporte-card__header">
+          <span class="reporte-card__name">{{ reporte.mascota.nombre }}</span>
+          <span class="badge" [ngClass]="getEstadoClass(reporte.estado)">
+            {{ getEstadoLabel(reporte.estado) }}
+          </span>
+        </div>
+        <p class="reporte-card__meta">
+          {{ reporte.mascota.especie }} · {{ reporte.mascota.raza || 'Raza desconocida' }}
+        </p>
+        <p class="reporte-card__location">📍 {{ reporte.direccion }}</p>
+        <p class="reporte-card__desc">{{ reporte.descripcion }}</p>
+        <!-- Usamos fecha_reporte en lugar de fecha_creacion -->
+        <span class="reporte-card__date">
+          {{ reporte.fecha_reporte | date:'dd/MM/yyyy' }}
+        </span>
+      </div>
+    </li>
+  </ul>
+</section>

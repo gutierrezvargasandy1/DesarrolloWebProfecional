@@ -1,0 +1,62 @@
+<section class="report-list">
+  <h2 class="report-list__title">Reportes recientes</h2>
+
+  <div *ngIf="loading" class="report-list__state">
+    <span class="spinner"></span>
+    <p>Cargando reportes...</p>
+  </div>
+
+  <div *ngIf="error" class="report-list__state report-list__state--error">
+    <p>⚠️ No se pudieron cargar los reportes.</p>
+  </div>
+
+  <ul *ngIf="!loading && !error && reportes.length > 0" class="report-list__grid">
+    <li
+      *ngFor="let reporte of reportes"
+      class="report-card"
+      (click)="goToDetail(reporte.id_reporte)"
+    >
+      <div class="report-card__img-wrap">
+        <!-- Usamos UrlHelper.file para construir la URL completa de la foto -->
+        <img
+          *ngIf="reporte.mascota.foto_url; else noFoto"
+          [src]="urlHelper.file(reporte.mascota.foto_url)"
+          [alt]="reporte.mascota.nombre"
+          class="report-card__img"
+        />
+        <ng-template #noFoto>
+          <div class="report-card__img report-card__img--placeholder">🐾</div>
+        </ng-template>
+      </div>
+
+      <div class="report-card__body">
+        <div class="report-card__header">
+          <span class="report-card__name">{{ reporte.mascota.nombre }}</span>
+          <span class="badge" [ngClass]="getEstadoClass(reporte.estado)">
+            {{ getEstadoLabel(reporte.estado) }}
+          </span>
+        </div>
+
+        <p class="report-card__meta">
+          {{ reporte.mascota.especie }} · {{ reporte.mascota.raza || 'Raza desconocida' }}
+        </p>
+
+        <p class="report-card__location">
+          📍 {{ reporte.direccion }}
+        </p>
+
+        <p class="report-card__desc">{{ reporte.descripcion }}</p>
+
+        <!-- Fecha corregida: fecha_reporte en lugar de fecha_creacion -->
+        <span class="report-card__date">
+          {{ reporte.fecha_reporte | date: 'dd/MM/yyyy' }}
+        </span>
+      </div>
+    </li>
+  </ul>
+
+  <!-- Mensaje cuando no hay reportes -->
+  <div *ngIf="!loading && !error && reportes.length === 0" class="report-list__state">
+    <p>No hay reportes disponibles.</p>
+  </div>
+</section>

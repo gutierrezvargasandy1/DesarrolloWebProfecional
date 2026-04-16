@@ -1,0 +1,108 @@
+<form #f="ngForm" (ngSubmit)="guardar()" class="form-mascota">
+  <h2>Nueva Mascota</h2>
+
+  <div class="campo-foto">
+    <label class="label-foto">
+      <span *ngIf="!fotoPreview">Seleccionar foto</span>
+      <img *ngIf="fotoPreview" [src]="fotoPreview" alt="Preview" class="preview">
+      <input type="file" accept="image/*" (change)="seleccionarFoto($event)" hidden>
+    </label>
+    <button type="button" *ngIf="fotoPreview" (click)="quitarFoto()" class="btn-quitar">
+      Quitar foto
+    </button>
+  </div>
+
+  <div class="grid">
+    <label>
+      Nombre
+      <input type="text" [(ngModel)]="dto.nombre" name="nombre" placeholder="Firulais">
+    </label>
+
+    <label>
+      Especie *
+      <select [(ngModel)]="dto.especie" name="especie" required>
+        <option value="" disabled>Selecciona...</option>
+        <option *ngFor="let e of especies" [value]="e">{{ e }}</option>
+      </select>
+    </label>
+
+    <label>
+      Raza
+      <input type="text" [(ngModel)]="dto.raza" name="raza" placeholder="Labrador">
+    </label>
+
+    <label>
+      Color
+      <input type="text" [(ngModel)]="dto.color" name="color" placeholder="Marrón">
+    </label>
+
+    <label>
+      Sexo
+      <select [(ngModel)]="dto.sexo" name="sexo">
+        <option value="">Sin especificar</option>
+        <option *ngFor="let s of sexos" [value]="s">{{ s }}</option>
+      </select>
+    </label>
+
+    <label>
+      Edad (años)
+      <input type="number" min="0" [(ngModel)]="dto.edad" name="edad" placeholder="3">
+    </label>
+
+    <label>
+      Estado
+      <select [(ngModel)]="dto.estado" name="estado">
+        <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+      </select>
+    </label>
+  </div>
+
+  <label class="full">
+    Descripción
+    <textarea [(ngModel)]="dto.descripcion" name="descripcion" rows="3"
+              placeholder="Cuéntanos sobre la mascota..."></textarea>
+  </label>
+
+  <label class="full">
+    Dirección del hogar
+    <input type="text"
+           [(ngModel)]="dto.direccion_hogar"
+           name="direccion_hogar"
+           (ngModelChange)="onDireccionChange($event)"
+           placeholder="Ej. Av. Insurgentes Sur 1234, CDMX">
+  </label>
+
+  <div class="geo-status" [ngSwitch]="estadoGeocoding">
+    <span *ngSwitchCase="'buscando'" class="buscando">Buscando coordenadas...</span>
+    <span *ngSwitchCase="'encontrado'" class="ok">
+      Coordenadas: {{ dto.latitud_hogar | number:'1.4-6' }}, {{ dto.longitud_hogar | number:'1.4-6' }}
+      <br><small>{{ direccionEncontrada }}</small>
+    </span>
+    <span *ngSwitchCase="'no-encontrado'" class="warn">
+      No se encontró esa dirección. Revisa o escribe las coordenadas a mano.
+    </span>
+    <span *ngSwitchCase="'error'" class="error">Error al buscar coordenadas.</span>
+  </div>
+
+  <div class="grid">
+    <label>
+      Latitud
+      <input type="number" step="any" [(ngModel)]="dto.latitud_hogar" name="latitud_hogar">
+    </label>
+    <label>
+      Longitud
+      <input type="number" step="any" [(ngModel)]="dto.longitud_hogar" name="longitud_hogar">
+    </label>
+  </div>
+
+  <p class="error" *ngIf="errorGuardado">{{ errorGuardado }}</p>
+
+  <div class="acciones">
+    <button type="button" (click)="cancelar()" class="btn-secundario" [disabled]="guardando">
+      Cancelar
+    </button>
+    <button type="submit" class="btn-primario" [disabled]="guardando || !dto.especie">
+      {{ guardando ? 'Guardando...' : 'Guardar' }}
+    </button>
+  </div>
+</form>

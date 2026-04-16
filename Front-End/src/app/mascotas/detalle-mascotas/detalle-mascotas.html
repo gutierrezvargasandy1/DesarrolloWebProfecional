@@ -1,0 +1,103 @@
+<div class="detalle">
+  <button class="detalle__back" (click)="volver()">← Volver a mis mascotas</button>
+
+  <div *ngIf="loading" class="detalle__state">
+    <span class="spinner"></span>
+    <p>Cargando mascota...</p>
+  </div>
+
+  <div *ngIf="error" class="detalle__state detalle__state--error">
+    <p>⚠️ No se pudo cargar la mascota.</p>
+  </div>
+
+  <div *ngIf="mascota && !loading" class="detalle__card">
+
+    <!-- Foto -->
+    <div class="detalle__img-wrap">
+      <img *ngIf="mascota.foto_url; else noFoto" [src]="UrlHelper.file(mascota.foto_url)" [alt]="mascota.nombre"
+        class="detalle__img" />
+      <ng-template #noFoto>
+        <div class="detalle__img detalle__img--placeholder">🐾</div>
+      </ng-template>
+    </div>
+
+    <div class="detalle__info">
+
+      <!-- Header -->
+      <div class="detalle__header">
+        <h2 class="detalle__nombre">{{ mascota.nombre }}</h2>
+        <span class="badge" [ngClass]="getEstadoClass(mascota.estado)">
+          {{ getEstadoLabel(mascota.estado) }}
+        </span>
+      </div>
+
+      <!-- Especie / raza -->
+      <p class="detalle__especie">
+        {{ mascota.especie }}
+        <ng-container *ngIf="mascota.raza"> · {{ mascota.raza }}</ng-container>
+        <ng-container *ngIf="mascota.color"> · {{ mascota.color }}</ng-container>
+      </p>
+
+      <!-- Datos básicos -->
+      <div class="detalle__grid">
+        <div class="detalle__dato" *ngIf="mascota.sexo">
+          <span class="detalle__dato-label">Sexo</span>
+          <span>{{ mascota.sexo }}</span>
+        </div>
+        <div class="detalle__dato" *ngIf="mascota.edad">
+          <span class="detalle__dato-label">Edad</span>
+          <span>{{ mascota.edad }} años</span>
+        </div>
+        <div class="detalle__dato" *ngIf="mascota.fecha_registro">
+          <span class="detalle__dato-label">Registrada</span>
+          <span>{{ mascota.fecha_registro | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="detalle__section" *ngIf="mascota.descripcion">
+        <h3>📝 Descripción</h3>
+        <p>{{ mascota.descripcion }}</p>
+      </div>
+
+      <!-- Dirección hogar + MAPA -->
+      <div class="detalle__section" *ngIf="mascota.direccion_hogar">
+        <h3>🏠 Dirección del hogar</h3>
+        <p>{{ mascota.direccion_hogar }}</p>
+
+        <!-- Mapa (solo si hay coordenadas) -->
+        <app-mapa
+          *ngIf="mascota.latitud_hogar && mascota.longitud_hogar"
+          [coordenadas]="puntosMapa"
+          [center]="{ lat: mascota.latitud_hogar, lng: mascota.longitud_hogar }"
+          [zoom]="15"
+        ></app-mapa>
+      </div>
+
+      <!-- Reportes -->
+      <div class="detalle__section">
+        <h3>📋 Reportes ({{ reportes.length }})</h3>
+
+        <p class="detalle__empty" *ngIf="reportes.length === 0">
+          Sin reportes registrados.
+        </p>
+
+        <ul class="reportes-list" *ngIf="reportes.length > 0">
+          <li *ngFor="let reporte of reportes" class="reporte-item" (click)="goToReporte(reporte.id_reporte)">
+            <div class="reporte-item__top">
+              <span class="reporte-item__dir">📍 {{ reporte.direccion }}</span>
+              <span class="badge" [ngClass]="getReporteEstadoClass(reporte.estado)">
+                {{ getReporteEstadoLabel(reporte.estado) }}
+              </span>
+            </div>
+            <p class="reporte-item__desc">{{ reporte.descripcion }}</p>
+            <span class="reporte-item__fecha">
+              {{ reporte.fecha_reporte | date:'dd/MM/yyyy' }}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>

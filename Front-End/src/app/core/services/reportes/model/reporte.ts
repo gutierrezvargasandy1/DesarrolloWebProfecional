@@ -5,9 +5,8 @@ export interface Reporte {
   latitud: number;
   longitud: number;
   direccion: string;
-  estado: 'perdido' | 'encontrado' | 'finalizado';
-  fecha_creacion: string;
-  fecha_actualizacion: string;
+  estado: 'PERDIDA' | 'ENCONTRADA' | 'CERRADA';   // ✅ cambiado
+  fecha_reporte: string;   
   usuario_id: number;
 }
 

@@ -1,0 +1,66 @@
+<section class="mis-mascotas">
+    <div class="mis-mascotas__top">
+        <h2 class="mis-mascotas__title">Mis Mascotas</h2>
+        <div class="mis-mascotas__actions">
+            <input class="mis-mascotas__search" type="text" placeholder="Buscar por nombre, especie..."
+                (input)="buscar($any($event.target).value)" />
+            <button class="btn-agregar" (click)="goToCrear()">
+                + Agregar mascota
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="loading" class="mis-mascotas__state">
+        <span class="spinner"></span>
+        <p>Cargando tus mascotas...</p>
+    </div>
+
+    <div *ngIf="error" class="mis-mascotas__state mis-mascotas__state--error">
+        <p>⚠️ No se pudieron cargar tus mascotas.</p>
+    </div>
+
+    <div *ngIf="!loading && !error && mascotasFiltradas.length === 0" class="mis-mascotas__state">
+        <p>No se encontraron mascotas.</p>
+    </div>
+
+    <ul *ngIf="!loading && !error && mascotasFiltradas.length > 0" class="mascotas-grid">
+        <li *ngFor="let mascota of mascotasFiltradas" class="mascota-card" (click)="goToDetail(mascota.id_mascota)">
+            <div class="mascota-card__img-wrap">
+                <img *ngIf="mascota.foto_url; else noFoto" [src]="UrlHelper.file(mascota.foto_url)"
+                    [alt]="mascota.nombre" class="mascota-card__img" />
+                <ng-template #noFoto>
+                    <div class="mascota-card__img mascota-card__img--placeholder">🐾</div>
+                </ng-template>
+            </div>
+
+            <div class="mascota-card__body">
+                <div class="mascota-card__header">
+                    <span class="mascota-card__name">{{ mascota.nombre }}</span>
+                    <span class="badge" [ngClass]="getEstadoClass(mascota.estado)">
+                        {{ getEstadoLabel(mascota.estado) }}
+                    </span>
+                </div>
+
+                <p class="mascota-card__meta">
+                    {{ mascota.especie }}
+                    <ng-container *ngIf="mascota.raza"> · {{ mascota.raza }}</ng-container>
+                    <ng-container *ngIf="mascota.color"> · {{ mascota.color }}</ng-container>
+                </p>
+
+                <p class="mascota-card__meta" *ngIf="mascota.sexo || mascota.edad">
+                    <ng-container *ngIf="mascota.sexo">{{ mascota.sexo }}</ng-container>
+                    <ng-container *ngIf="mascota.sexo && mascota.edad"> · </ng-container>
+                    <ng-container *ngIf="mascota.edad">{{ mascota.edad }} años</ng-container>
+                </p>
+
+                <p class="mascota-card__location" *ngIf="mascota.direccion_hogar">
+                    🏠 {{ mascota.direccion_hogar }}
+                </p>
+
+                <p class="mascota-card__desc" *ngIf="mascota.descripcion">
+                    {{ mascota.descripcion }}
+                </p>
+            </div>
+        </li>
+    </ul>
+</section>

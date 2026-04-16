@@ -3,5 +3,5 @@ export interface ActualizarReporteDTO {
   latitud?: number;
   longitud?: number;
   direccion?: string;
-  estado?: 'perdido' | 'encontrado' | 'finalizado';
+  estado?: 'PERDIDA' | 'ENCONTRADA' | 'CERRADA';   // ✅ cambiado
 }

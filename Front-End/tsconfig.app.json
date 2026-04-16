@@ -8,7 +8,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "src/app/reporte/mis-reportes"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

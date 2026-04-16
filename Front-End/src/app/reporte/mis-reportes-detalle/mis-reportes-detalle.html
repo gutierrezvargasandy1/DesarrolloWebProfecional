@@ -1,0 +1,78 @@
+<div class="detalle">
+  <button class="detalle__back" (click)="volver()">← Volver a mis reportes</button>
+
+  <div *ngIf="loading" class="detalle__state">
+    <span class="spinner"></span>
+    <p>Cargando reporte...</p>
+  </div>
+
+  <div *ngIf="error" class="detalle__state detalle__state--error">
+    <p>⚠️ No se pudo cargar el reporte.</p>
+  </div>
+
+  <div *ngIf="reporte && !loading" class="detalle__card">
+    <div class="detalle__img-wrap">
+      <img
+        *ngIf="reporte.mascota.foto_url; else noFoto"
+        [src]="urlHelper.file(reporte.mascota.foto_url)"
+        [alt]="reporte.mascota.nombre"
+        class="detalle__img"
+      />
+      <ng-template #noFoto>
+        <div class="detalle__img detalle__img--placeholder">🐾</div>
+      </ng-template>
+    </div>
+
+    <div class="detalle__info">
+      <div class="detalle__header">
+        <h2 class="detalle__nombre">{{ reporte.mascota.nombre }}</h2>
+        <span class="badge" [ngClass]="getEstadoClass(reporte.estado)">
+          {{ getEstadoLabel(reporte.estado) }}
+        </span>
+      </div>
+
+      <p class="detalle__especie">
+        {{ reporte.mascota.especie }} · {{ reporte.mascota.raza || 'Raza desconocida' }}
+      </p>
+
+      <div class="detalle__section">
+        <h3>📍 Ubicación del reporte</h3>
+        <p>{{ reporte.direccion }}</p>
+        <app-mapa
+          [coordenadas]="puntosMapa"
+          [center]="{ lat: reporte.latitud, lng: reporte.longitud }"
+          [zoom]="14"
+        ></app-mapa>
+      </div>
+
+      <div class="detalle__section">
+        <h3>📝 Descripción</h3>
+        <p>{{ reporte.descripcion }}</p>
+      </div>
+
+      <div class="detalle__section">
+        <h3>📅 Fechas</h3>
+        <p>Creado: {{ reporte.fecha_reporte | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+
+      <!-- Avistamientos -->
+      <div class="detalle__section" *ngIf="reporte.avistamientos && reporte.avistamientos.length > 0">
+        <h3>👁️ Avistamientos ({{ reporte.avistamientos.length }})</h3>
+        <ul class="avistamientos">
+          <li *ngFor="let av of reporte.avistamientos" class="avistamiento-item">
+            <p class="avistamiento-item__desc">{{ av.descripcion }}</p>
+            <p class="avistamiento-item__lugar">📍 {{ av.direccion }}</p>
+            <span class="avistamiento-item__fecha">
+              {{ av.fecha_avistamiento | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="detalle__section" *ngIf="!reporte.avistamientos || reporte.avistamientos.length === 0">
+        <h3>👁️ Avistamientos</h3>
+        <p class="detalle__empty">Sin avistamientos registrados.</p>
+      </div>
+    </div>
+  </div>
+</div>

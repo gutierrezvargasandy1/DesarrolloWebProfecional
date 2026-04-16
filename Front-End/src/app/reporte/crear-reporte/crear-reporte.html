@@ -1,0 +1,87 @@
+<!-- crear-reporte.html -->
+<div class="crear-reporte">
+  <h1>Nuevo reporte</h1>
+
+  <form [formGroup]="reporteForm" (ngSubmit)="onSubmit()">
+
+    <!-- Mascota -->
+    <div class="form-group">
+      <label for="id_mascota">Mascota *</label>
+      <select id="id_mascota" formControlName="id_mascota">
+        <option value="">-- Selecciona una mascota --</option>
+        <option *ngFor="let mascota of mascotas" [value]="mascota.id_mascota">
+          {{ mascota.nombre }} ({{ mascota.especie }})
+        </option>
+      </select>
+      <div *ngIf="reporteForm.get('id_mascota')?.invalid && reporteForm.get('id_mascota')?.touched" class="error">
+        Selecciona una mascota
+      </div>
+    </div>
+
+    <!-- Estado del reporte (todos los valores del enum) -->
+    <div class="form-group">
+      <label>Estado *</label>
+      <select formControlName="estado" class="estado-select">
+        <option *ngFor="let est of estados" [value]="est.value">
+          {{ est.label }}
+        </option>
+      </select>
+      <!-- También podrías usar radio buttons o botones, pero un select es más limpio para 5 opciones -->
+    </div>
+
+    <!-- Descripción -->
+    <div class="form-group">
+      <label>Descripción *</label>
+      <textarea formControlName="descripcion" rows="3"></textarea>
+      <div *ngIf="reporteForm.get('descripcion')?.invalid && reporteForm.get('descripcion')?.touched" class="error">
+        La descripción es obligatoria
+      </div>
+    </div>
+
+    <!-- Dirección -->
+    <div class="form-group">
+      <label>Dirección *</label>
+      <input type="text" formControlName="direccion" (input)="onDireccionChange($event.target.value)"
+             placeholder="Ej. Av. Insurgentes Sur 1234, CDMX" />
+      <div *ngIf="reporteForm.get('direccion')?.invalid && reporteForm.get('direccion')?.touched" class="error">
+        La dirección es obligatoria
+      </div>
+    </div>
+
+    <!-- Estado geocodificación -->
+    <div class="geo-status" [ngSwitch]="estadoGeocoding">
+      <span *ngSwitchCase="'buscando'" class="buscando">🔍 Buscando coordenadas...</span>
+      <span *ngSwitchCase="'encontrado'" class="ok">
+        ✅ Ubicación encontrada<br>
+        <small>{{ direccionEncontrada }}</small>
+      </span>
+      <span *ngSwitchCase="'no-encontrado'" class="warn">
+        ⚠️ No se encontró esa dirección. Revisa o escribe las coordenadas a mano.
+      </span>
+      <span *ngSwitchCase="'error'" class="error">❌ Error al buscar coordenadas.</span>
+    </div>
+
+    <!-- Coordenadas manuales -->
+    <div class="coordenadas-manuales">
+      <div class="form-group half">
+        <label>Latitud</label>
+        <input type="number" step="any" formControlName="latitud" placeholder="Ej. 19.4326">
+      </div>
+      <div class="form-group half">
+        <label>Longitud</label>
+        <input type="number" step="any" formControlName="longitud" placeholder="Ej. -99.1332">
+      </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="acciones">
+      <button type="button" class="btn-secundario" (click)="cancelar()" [disabled]="loading">
+        Cancelar
+      </button>
+      <button type="submit" class="btn-primario" [disabled]="reporteForm.invalid || loading">
+        {{ loading ? 'Guardando...' : 'Crear reporte' }}
+      </button>
+    </div>
+
+  </form>
+</div>

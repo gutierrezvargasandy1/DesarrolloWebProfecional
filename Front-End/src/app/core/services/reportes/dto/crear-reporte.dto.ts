@@ -4,5 +4,5 @@ export interface CrearReporteDTO {
   latitud: number;
   longitud: number;
   direccion: string;
-  estado?: 'perdido' | 'encontrado';
+  estado?: 'PERDIDA' | 'ENCONTRADA';   // ✅ cambiado
 }

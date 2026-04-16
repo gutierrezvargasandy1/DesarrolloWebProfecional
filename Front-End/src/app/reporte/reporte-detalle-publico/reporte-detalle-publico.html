@@ -1,0 +1,62 @@
+<div class="detalle">
+  <button class="detalle__back" (click)="volver()">← Volver</button>
+
+  <div *ngIf="loading" class="detalle__state">
+    <span class="spinner"></span>
+    <p>Cargando reporte...</p>
+  </div>
+
+  <div *ngIf="error" class="detalle__state detalle__state--error">
+    <p>⚠️ No se pudo cargar el reporte.</p>
+  </div>
+
+  <div *ngIf="reporte && !loading" class="detalle__card">
+    <!-- Foto usando UrlHelper -->
+    <div class="detalle__img-wrap">
+      <img
+        *ngIf="reporte.mascota.foto_url; else noFoto"
+        [src]="urlHelper.file(reporte.mascota.foto_url)"
+        [alt]="reporte.mascota.nombre"
+        class="detalle__img"
+      />
+      <ng-template #noFoto>
+        <div class="detalle__img detalle__img--placeholder">🐾</div>
+      </ng-template>
+    </div>
+
+    <div class="detalle__info">
+      <div class="detalle__header">
+        <h2 class="detalle__nombre">{{ reporte.mascota.nombre }}</h2>
+        <span class="badge" [ngClass]="getBadgeClass(reporte.estado)">
+          {{ getEstadoLabel(reporte.estado) }}
+        </span>
+      </div>
+
+      <p class="detalle__especie">
+        {{ reporte.mascota.especie }} · {{ reporte.mascota.raza || 'Raza desconocida' }}
+      </p>
+
+      <div class="detalle__section">
+        <h3>📍 Ubicación</h3>
+        <p>{{ reporte.direccion }}</p>
+        <!-- Mapa (opcional, si quieres mostrarlo) -->
+        <app-mapa
+          *ngIf="puntosMapa.length > 0"
+          [coordenadas]="puntosMapa"
+          [center]="{ lat: reporte.latitud, lng: reporte.longitud }"
+          [zoom]="14"
+        ></app-mapa>
+      </div>
+
+      <div class="detalle__section">
+        <h3>📝 Descripción</h3>
+        <p>{{ reporte.descripcion }}</p>
+      </div>
+
+      <div class="detalle__section">
+        <h3>📅 Fecha</h3>
+        <p>Creado: {{ reporte.fecha_reporte | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+  </div>
+</div>
