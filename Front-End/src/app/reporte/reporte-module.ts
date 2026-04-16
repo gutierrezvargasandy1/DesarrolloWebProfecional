@@ -18,8 +18,7 @@ import { CrearReporte } from './crear-reporte/crear-reporte';
     MisReportes,
     MisReportesDetalle,
     CrearReporte,
-    // ❌ NO incluyas SharedModule aquí
-    // ❌ NO incluyas MapaComponent (ya está en SharedModule)
+
   ],
   imports: [
     CommonModule,
