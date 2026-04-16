@@ -10,10 +10,9 @@ ACCESS_EXP_MIN = int(os.getenv("JWT_ACCESS_MIN", 15))
 REFRESH_EXP_DAYS = int(os.getenv("JWT_REFRESH_DAYS", 7))
 
 
-def generate_access_token(user_id: int, role: str) -> str:
+def generate_access_token(user_id: int) -> str:
     payload = {
         "sub": user_id,
-        "role": role,
         "type": "access",
         "iat": datetime.utcnow(),
         "exp": datetime.utcnow() + timedelta(minutes=ACCESS_EXP_MIN),

@@ -18,7 +18,7 @@ def login():
         data = request.get_json()
         usuario = auth_service.login(data["correo"], data["password"])
 
-        access_token = generate_access_token(usuario.id_usuario, usuario.rol)
+        access_token = generate_access_token(usuario.id_usuario)
         refresh_token = generate_refresh_token(usuario.id_usuario)
 
         response = make_response(
@@ -33,7 +33,7 @@ def login():
             httponly=True,
             secure=True,
             samesite="Strict",
-            route= "auth/refresh",
+            path= "auth/refresh",
             max_age=60 * 60 * 24 * 7
         )
 

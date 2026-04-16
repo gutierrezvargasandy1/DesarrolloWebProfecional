@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from app.config.config import config
+from flask_cors import CORS  
 from flasgger import Swagger
 
 db = SQLAlchemy()
@@ -84,7 +85,15 @@ def create_app(config_name="default"):
         "swagger_ui_favicon_32": "https://unpkg.com/swagger-ui-dist@5.11.0/favicon-32x32.png",
         "swagger_ui_favicon_16": "https://unpkg.com/swagger-ui-dist@5.11.0/favicon-16x16.png",
     }
+    
+    CORS(app, 
+      origins=["http://localhost:4200"],  # Tu frontend Angular en desarrollo
+      supports_credentials=True,           # Equivalente a credentials: true
+      methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+      allow_headers=["Content-Type", "Authorization", "X-Show-Loader", "X-Skip-Auth"])
+
 
     Swagger(app, template=swagger_template, config=swagger_config)
+    
 
     return app
