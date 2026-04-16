@@ -40,14 +40,7 @@ export class AuthService {
       );
   }
 
-  logout() {
-    return this.api.post(API_ENDPOINTS.AUTH.LOGOUT, {}).pipe(
-      tap(() => {
-        this.tokenService.clearToken();
-        sessionStorage.clear();
-      })
-    );
-  }
+
 
   forgotPassword(email: string) {
     return this.api.post<ApiResponse<boolean>>(

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth/auth.service';
+import { SessionStorageService } from '../../core/services/storage/session-storage.service';
 
 @Component({
   selector: 'app-change-password',
@@ -11,14 +12,14 @@ import { AuthService } from '../../core/services/auth/auth.service';
 })
 export class ChangePassword {
   form: FormGroup;
-  email: string = '';
+  correo: string = '';
   code: string = '';
   isLoading: boolean = false;
   errorMessage: string = '';
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
   
-  // Propiedades para verificar requisitos de contraseña
+  // Requisitos de contraseña
   hasMinLength: boolean = false;
   hasUppercase: boolean = false;
   hasLowercase: boolean = false;
@@ -29,14 +30,17 @@ export class ChangePassword {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private sessionStorage: SessionStorageService
   ) {
+    // Recuperar correo y código del state de navegación o del sessionStorage
     const navigation = this.router.getCurrentNavigation();
-    this.email = navigation?.extras?.state?.['email'] || sessionStorage.getItem('resetEmail') || '';
-    this.code = navigation?.extras?.state?.['code'] || sessionStorage.getItem('resetCode') || '';
+    this.correo = navigation?.extras?.state?.['correo'] || this.sessionStorage.get<string>('resetCorreo') || '';
+    this.code = navigation?.extras?.state?.['code'] || this.sessionStorage.get<string>('resetCode') || '';
     
-    if (!this.email || !this.code) {
-      this.router.navigate(['/login']);
+    if (!this.correo || !this.code) {
+      // Si falta algún dato, redirigir al inicio del flujo
+      this.router.navigate(['/auth/forgot-password']);
     }
 
     this.form = this.fb.group({
@@ -44,7 +48,7 @@ export class ChangePassword {
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator.bind(this) });
 
-    // Escuchar cambios en la contraseña para actualizar los requisitos visuales
+    // Escuchar cambios en la contraseña para actualizar requisitos visuales
     this.form.get('password')?.valueChanges.subscribe((value: string) => {
       this.updatePasswordRequirements(value);
     });
@@ -53,7 +57,6 @@ export class ChangePassword {
   // Validador personalizado para contraseña
   passwordValidator(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
-    
     if (!value) return null;
     
     const errors: any = {};
@@ -61,27 +64,21 @@ export class ChangePassword {
     if (/\s/.test(value)) {
       errors.noSpaces = true;
     }
-    
     if (value.length < 8) {
       errors.minLength = true;
     }
-    
     if (value.length > 20) {
       errors.maxLength = true;
     }
-    
     if (!/[A-Z]/.test(value)) {
       errors.uppercase = true;
     }
-    
     if (!/[a-z]/.test(value)) {
       errors.lowercase = true;
     }
-    
     if (!/[0-9]/.test(value)) {
       errors.number = true;
     }
-    
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(value)) {
       errors.specialChar = true;
     }
@@ -93,9 +90,7 @@ export class ChangePassword {
   passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
     const password = group.get('password')?.value;
     const confirmPassword = group.get('confirmPassword')?.value;
-    
     if (!confirmPassword) return null;
-    
     return password === confirmPassword ? null : { passwordMismatch: true };
   }
 
@@ -141,16 +136,16 @@ export class ChangePassword {
       return 'La contraseña no debe exceder los 20 caracteres';
     }
     if (this.password?.hasError('uppercase')) {
-      return 'La contraseña debe contener al menos una letra mayúscula';
+      return 'Debe contener al menos una letra mayúscula';
     }
     if (this.password?.hasError('lowercase')) {
-      return 'La contraseña debe contener al menos una letra minúscula';
+      return 'Debe contener al menos una letra minúscula';
     }
     if (this.password?.hasError('number')) {
-      return 'La contraseña debe contener al menos un número';
+      return 'Debe contener al menos un número';
     }
     if (this.password?.hasError('specialChar')) {
-      return 'La contraseña debe contener al menos un carácter especial';
+      return 'Debe contener al menos un carácter especial';
     }
     return '';
   }
@@ -181,26 +176,28 @@ export class ChangePassword {
 
     const nuevaPassword = this.form.get('password')?.value;
 
-    this.authService.changePassword(this.email, this.code, nuevaPassword).subscribe({
+    // Llamar al servicio con correo, código y nueva contraseña
+    this.authService.changePassword(this.correo, this.code, nuevaPassword).subscribe({
       next: (response) => {
         this.isLoading = false;
         if (response.data) {
           alert('Contraseña cambiada exitosamente. Por favor, inicia sesión con tu nueva contraseña.');
-          sessionStorage.removeItem('resetEmail');
-          sessionStorage.removeItem('resetCode');
-          this.router.navigate(['/login']);
+          // Limpiar datos temporales
+          this.sessionStorage.remove('resetCorreo');
+          this.sessionStorage.remove('resetCode');
+          this.router.navigate(['/auth/login']);
         } else {
           this.errorMessage = 'Error al cambiar la contraseña. Intenta de nuevo.';
         }
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'Error al cambiar la contraseña. Intenta de nuevo.';
+        this.errorMessage = err?.message || 'Error al cambiar la contraseña. Intenta de nuevo.';
       }
     });
   }
 
   goBack() {
-    this.router.navigate(['/verify-code']);
+    this.router.navigate(['/auth/forgot-password-code']);
   }
 }

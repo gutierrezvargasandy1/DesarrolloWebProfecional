@@ -8,7 +8,22 @@ To start a local development server, run:
 
 ```bash
 ng serve
+
 ```
+
+Dependencias
+
+//Mapa 
+Leaflet + OpenStreetMap
+
+npm install leaflet
+npm install @types/leaflet --save-dev
+
+Configuracion de Angular.json 
+
+Styles
+"node_modules/leaflet/dist/leaflet.css"
+
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 

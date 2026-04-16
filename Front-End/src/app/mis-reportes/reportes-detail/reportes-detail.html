@@ -1,0 +1,74 @@
+<div class="detail-container">
+  <!-- Loader -->
+  <div class="loader-overlay" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Cargando detalles del reporte...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="error-message" *ngIf="errorMessage && !isLoading">
+    ❌ {{ errorMessage }}
+    <button (click)="cargarReporte()" class="retry-btn">Reintentar</button>
+    <button (click)="volverALista()" class="back-btn">Volver a la lista</button>
+  </div>
+
+  <!-- Contenido del reporte -->
+  <div class="reporte-content" *ngIf="reporte && !isLoading && !errorMessage">
+    <button class="btn-back" (click)="volverALista()">⬅️ Volver a mis reportes</button>
+
+    <div class="detail-card">
+      <!-- Cabecera -->
+      <div class="card-header" [style.border-left-color]="getEstadoColor(reporte.estado)">
+        <div class="estado-badge" [style.background-color]="getEstadoColor(reporte.estado)">
+          {{ getEstadoIcono(reporte.estado) }} {{ reporte.estado | uppercase }}
+        </div>
+        <div class="fecha">📅 {{ formatearFecha(reporte.fecha_creacion) }}</div>
+      </div>
+
+      <div class="card-body">
+        <!-- Mascota -->
+        <div class="mascota-section">
+          <img [src]="getFotoUrl()" class="mascota-foto-large" alt="Mascota">
+          <div class="mascota-info">
+            <h1>{{ reporte.mascota?.nombre || 'Mascota sin nombre' }}</h1>
+            <p class="raza">{{ reporte.mascota?.raza }} • {{ reporte.mascota?.especie }}</p>
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="descripcion-section">
+          <h3>📝 Descripción del caso</h3>
+          <p>{{ reporte.descripcion }}</p>
+        </div>
+
+        <!-- Ubicación y mapa -->
+        <div class="ubicacion-section">
+          <h3>📍 Ubicación del reporte</h3>
+          <p><strong>Dirección:</strong> {{ reporte.direccion }}</p>
+          <div class="coordenadas" *ngIf="reporte.latitud && reporte.longitud">
+            <strong>Coordenadas:</strong> {{ reporte.latitud | number:'1.6f' }}, {{ reporte.longitud | number:'1.6f' }}
+          </div>
+          <div class="mapa-wrapper" *ngIf="coordenadasMapa.length > 0">
+            <app-mapa [coordenadas]="coordenadasMapa"></app-mapa>
+          </div>
+          <a *ngIf="getMapUrl()" [href]="getMapUrl()" target="_blank" class="map-link">🗺️ Ver en Google Maps</a>
+        </div>
+
+        <!-- Avistamientos (solo si existen) -->
+        <div class="avistamientos-section" *ngIf="reporte.avistamientos?.length">
+<h3>👀 Avistamientos ({{ reporte.avistamientos?.length || 0 }})</h3>          <div class="avistamiento-card" *ngFor="let av of reporte.avistamientos">
+            <p><strong>📅 {{ formatearFecha(av.fecha_avistamiento) }}</strong></p>
+            <p>{{ av.descripcion }}</p>
+            <p>📍 {{ av.direccion }}</p>
+            <a *ngIf="av.latitud && av.longitud" [href]="'https://maps.google.com/?q=' + av.latitud + ',' + av.longitud" target="_blank">Ver ubicación</a>
+          </div>
+        </div>
+      </div> <!-- fin card-body -->
+
+      <div class="card-footer">
+        <button class="btn-compartir" (click)="compartir()">📢 Compartir</button>
+        <button class="btn-avistar" (click)="reportarAvistamiento()">👀 Reportar avistamiento</button>
+      </div>
+    </div> <!-- fin detail-card -->
+  </div> <!-- fin reporte-content -->
+</div> <!-- fin detail-container -->

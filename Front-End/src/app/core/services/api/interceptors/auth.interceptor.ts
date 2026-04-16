@@ -25,7 +25,7 @@ export class AuthInterceptor implements HttpInterceptor {
         }
 
         // Saltar endpoints públicos
-        const publicEndpoints = ['/auth/login', '/auth/register', '/auth/forgot-password'];
+        const publicEndpoints = [  '/auth/login','/auth/register', '/auth/forgot-password','/auth/verify-code','/auth/change-password'];
         if (publicEndpoints.some(endpoint => req.url.includes(endpoint))) {
             return next.handle(req);
         }
@@ -48,7 +48,7 @@ export class AuthInterceptor implements HttpInterceptor {
                     }
 
                     if (message === 'Token inválido') {
-                        this.authService.logout();
+                        this.tokenService.clearToken();
                         this.router.navigate(['auth/login']);
                         return throwError(() => error);
                     }
@@ -81,7 +81,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 }),
                 catchError(error => {
                     this.isRefreshing = false;
-                    this.authService.logout();
+                    this.tokenService.clearToken();
                     return throwError(() => error);
                 })
             );

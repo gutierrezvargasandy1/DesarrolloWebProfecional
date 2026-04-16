@@ -2,7 +2,6 @@ export const API_ENDPOINTS = {
   // ==================== AUTH ====================
   AUTH: {
     LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout',
     REFRESH_TOKEN: '/auth/refresh',
     FORGOT_PASSWORD: '/auth/recuperar',
     VERIFY_CODE: '/auth/verificar-codigo',
@@ -35,14 +34,20 @@ export const API_ENDPOINTS = {
     STOCK: (id: number | string) => `/products/${id}/stock`
   },
 
-  // ==================== REPORTS ====================
-  REPORTS: {
-    BASE: '/reports',
-    SALES: '/reports/sales',
-    USERS: '/reports/users',
-    PRODUCTS: '/reports/products',
-    EXPORT: '/reports/export',
-    DOWNLOAD: (id: string) => `/reports/download/${id}`
+  // ==================== REPORTES ====================
+  REPORTES: {
+    BASE: '/reportes',
+    GET_ALL: '/reportes',
+    GET_BY_ID: (id: number) => `/reportes/${id}`,
+    GET_ALL_PUBLIC: '/reportes/public',
+    GET_PUBLIC_BY_ID: (id: number) => `/reportes/public/${id}`,
+    GET_ALL_FULL: '/reportes/full',
+    GET_FULL_BY_ID: (id: number) => `/reportes/${id}/full`,
+    CREATE: '/reportes',
+    UPDATE: (id: number) => `/reportes/${id}`,
+    DELETE: (id: number) => `/reportes/${id}`,
+    CREATE_AVISTAMIENTO: (idReporte: number) => `/reportes/${idReporte}/avistamientos`,
+    UPDATE_AVISTAMIENTO: (idAvistamiento: number) => `/reportes/avistamientos/${idAvistamiento}`,
   },
 
   // ==================== DASHBOARD ====================

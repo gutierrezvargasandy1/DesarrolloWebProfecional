@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../core/services/auth/auth.service';
+import { SessionStorageService } from '../../core/services/storage/session-storage.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -10,8 +12,15 @@ import { Router } from '@angular/router';
 })
 export class ForgotPassword {
   form: FormGroup;
+  isLoading = false;
+  errorMessage = '';
 
-  constructor(private fb: FormBuilder, private router: Router ) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService,
+    private sessionStorage: SessionStorageService
+  ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, this.emailValidator]]
     });
@@ -20,26 +29,18 @@ export class ForgotPassword {
   // Validador personalizado para email
   emailValidator(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
-    
     if (!value) return null;
-    
-    // No permitir espacios
     if (/\s/.test(value)) {
       return { noSpaces: 'El correo no debe contener espacios' };
     }
-    
-    // No permitir símbolos raros (solo letras, números, puntos, guiones, guión bajo y @)
     const validPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!validPattern.test(value)) {
       return { invalidFormat: 'Formato de correo inválido' };
     }
-    
-    // Validar que no tenga caracteres especiales no permitidos
     const invalidChars = /[^a-zA-Z0-9@._-]/;
     if (invalidChars.test(value)) {
       return { invalidChars: 'El correo contiene caracteres no permitidos' };
     }
-    
     return null;
   }
 
@@ -64,12 +65,28 @@ export class ForgotPassword {
   }
 
   submit() {
-    if (this.form.valid) {
-      const email = this.form.get('email')?.value;
-      console.log('Enviar enlace de recuperación a:', email);
-      // Aquí va la lógica para enviar el email de recuperación
-      alert(`Se ha enviado un enlace de recuperación a ${email}`);
-      this.router.navigate(['auth/forgot-password-code'])
-    }
+    if (this.form.invalid) return;
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const email = this.form.get('email')?.value;
+
+    // El backend espera { correo: email }
+    this.authService.forgotPassword(email).subscribe({
+      next: () => {
+        this.isLoading = false;
+        // Guardar el correo en sessionStorage para la siguiente pantalla
+        this.sessionStorage.set('resetCorreo', email);
+        // Navegar a la pantalla de ingreso del código
+        this.router.navigate(['auth/forgot-password-code'], {
+          state: { correo: email }
+        });
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err?.message || 'Error al enviar el enlace de recuperación. Intenta de nuevo.';
+      }
+    });
   }
 }
