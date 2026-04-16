@@ -39,6 +39,7 @@ def jwt_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
+        print("AUTH HEADER:", request.headers.get("Authorization"))
 
         if not auth_header or not auth_header.startswith("Bearer "):
             return jsonify({"status": 401, "message": "Token requerido"}), 401
@@ -52,7 +53,6 @@ def jwt_required(f):
                 raise jwt.InvalidTokenError()
 
             g.user_id = payload["sub"]
-            g.role = payload["role"]
 
         except jwt.ExpiredSignatureError:
             return jsonify({"status": 401, "message": "Token expirado"}), 401

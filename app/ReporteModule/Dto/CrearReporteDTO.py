@@ -6,7 +6,7 @@ class CrearReporteDTO:
         latitud: float,
         longitud: float,
         direccion: str = None,
-        estado: str = "PERDIDA"
+        estado: str = None
     ):
         self.id_mascota = id_mascota
         self.descripcion = descripcion
